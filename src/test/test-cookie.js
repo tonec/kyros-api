@@ -1,0 +1,4 @@
+export default {
+  accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVGVzdCBVc2VyIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaWQiOiI1YTVlZDkwMGM0NzhkNTA2NjJmZGU1NGUiLCJpYXQiOjE1MTk5NDQ3MjV9.UkuBth2Mb_BRfkiBbeOUz-hDeFXHt5982pRC-NTgX0s',
+  expires: 1
+}
