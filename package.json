@@ -27,12 +27,15 @@
     "supertest": "^4.0.2"
   },
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "bcrypt-nodejs": "^0.0.3",
+    "dotenv": "^8.2.0",
     "is-master": "^1.2.2",
     "jsonwebtoken": "^8.1.1",
     "lodash": "^4.17.5",
     "mongo": "^0.1.0",
     "mongoose": "^5.0.6",
+    "mongoose-beautiful-unique-validation": "^7.1.1",
     "nodemon": "^2.0.4",
     "qs": "^6.5.1",
     "restify": "^8.5.1",

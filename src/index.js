@@ -7,6 +7,8 @@ import routes from './routes'
 import tasks from './tasks'
 import verifyToken from './utils/verifyToken'
 
+require('dotenv').config()
+
 const port = process.env.API_PORT || 8080
 
 process.on('unhandledRejection', error => console.error('unhandledRejection error: ', error))
@@ -68,9 +70,13 @@ app.use((req, res, next) => {
 })
 
 app.use(restify.plugins.acceptParser(app.acceptable))
+
 app.use(restify.plugins.queryParser({ mapParams: true }))
+
 app.use(restify.plugins.bodyParser({ mapParams: false }))
+
 app.use(paginate(app))
+
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Headers', 'X-Requested-With')

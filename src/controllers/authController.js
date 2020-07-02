@@ -1,27 +1,37 @@
-import errors from 'restify-errors'
+import { BadRequestError, UnauthorizedError } from 'restify-errors'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt-nodejs'
-import User from '../models/userModel'
+import UserModel from '../models/userModel'
 import verifyToken from '../utils/verifyToken'
 
 export default {
   // User registration
-  register: (req, res) => {
+  register: (req, res, next) => {
     const { body } = req
 
     const userProps = {
       name: body.name,
       email: body.email,
-      password: bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
+      password: body.password
+      // password: bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
     }
 
     if (!body.name || !body.email || !body.password) {
       return res.send(
-        new errors.BadRequestError('Incomplete registration information.')
+        new BadRequestError('Incomplete registration information.')
       )
     }
 
-    User.create(userProps)
+    const User = new UserModel(userProps)
+
+    const validation = User.joiValidate(userProps)
+
+    if (validation.error) {
+      res.send(500, validation.error.details)
+      return
+    }
+
+    User.save()
       .then(user => {
         res.json({
           _id: user._id,
@@ -31,20 +41,16 @@ export default {
         })
       })
       .catch(err => {
-        res.send(
-          new errors.BadRequestError({
-            message: err.message
-          })
-        )
+        res.send(500, err.errors)
       })
   },
 
   // User login
   login: (req, res, next) => {
-    User.findOne({ email: req.body.email }).then(user => {
+    UserModel.findOne({ email: req.body.email }).then(user => {
       if (!user) {
         return res.send(
-          new errors.UnauthorizedError({
+          new UnauthorizedError({
             message: 'Authentication failed. User not found.'
           })
         )
@@ -52,7 +58,7 @@ export default {
 
       if (!user.comparePasswords(req.body.password)) {
         return res.send(
-          new errors.UnauthorizedError({
+          new UnauthorizedError({
             message: 'Authentication failed. The password entered does not match our records.'
           })
         )
@@ -100,7 +106,7 @@ export default {
     console.log('after+++++++++++', req.user)
 
     return res.send(
-      new errors.UnauthorizedError({
+      new UnauthorizedError({
         message: 'Unauthorised usesssssssssssssr.'
       })
     )
