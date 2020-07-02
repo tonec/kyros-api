@@ -1,5 +1,5 @@
 const API_ROOT = '/api'
-const DB_NAME = 'viatorem'
+const DB_NAME = 'kyros'
 
 export default {
   port: process.env.PORT || '3000',

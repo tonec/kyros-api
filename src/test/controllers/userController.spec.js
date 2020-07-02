@@ -46,7 +46,7 @@ describe('ROUTE: /users', () => {
   it('A GET to /users should return a list of users', done => {
     request(api)
       .get(path('/users'))
-      .set('Cookie', `viatorem=${JSON.stringify(cookie)}`)
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -79,7 +79,7 @@ describe('ROUTE: /users', () => {
   it('A GET to /users/:id should return a specific user', done => {
     request(api)
       .get(path(`/users/${userOne._id}`))
-      .set('Cookie', `viatorem=${JSON.stringify(cookie)}`)
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {

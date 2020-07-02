@@ -31,7 +31,7 @@ describe('ROUTE: POST /trips', () => {
   it('A POST to /trips should be a bad request without title', done => {
     request(api)
       .post(path('/trips'))
-      .set('Cookie', `viatorem=${JSON.stringify(cookie)}`)
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .send({
         description: 'This is my test trip.',
         startDate: '2018-02-01T00:00:00.000Z',
@@ -44,7 +44,7 @@ describe('ROUTE: POST /trips', () => {
   it('A POST to /trips should be a bad request without startDate', done => {
     request(api)
       .post(path('/trips'))
-      .set('Cookie', `viatorem=${JSON.stringify(cookie)}`)
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .send({
         title: 'Test Trip',
         description: 'This is my test trip.',
@@ -57,7 +57,7 @@ describe('ROUTE: POST /trips', () => {
   it('A POST to /trips should be a bad request without endDate', done => {
     request(api)
       .post(path('/trips'))
-      .set('Cookie', `viatorem=${JSON.stringify(cookie)}`)
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .send({
         title: 'Test Trip',
         description: 'This is my test trip.',
@@ -68,10 +68,10 @@ describe('ROUTE: POST /trips', () => {
   })
 
   it('A POST to /trips should create a new trip and return the created trip', done => {
-    Trip.count().then(count => {
+    Trip.countDocuments().then(count => {
       request(api)
         .post(path('/trips'))
-        .set('Cookie', `viatorem=${JSON.stringify(cookie)}`)
+        .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
         .send(tripOne)
         .expect('Content-type', /json/)
         .expect(200)
@@ -80,7 +80,7 @@ describe('ROUTE: POST /trips', () => {
             return done(new Error(`Supertest has encountered an error: ${err}`))
           }
 
-          Trip.count()
+          Trip.countDocuments()
             .then(newCount => {
               expect(newCount).to.equal(count + 1)
             })

@@ -83,7 +83,7 @@ describe('ROUTE: GET /trips', () => {
   it('A GET to /trips should return a list of all trips for the specific user', done => {
     request(api)
       .get(path('/trips'))
-      .set('Cookie', `viatorem=${JSON.stringify(auth[0].login.auth)}`)
+      .set('Cookie', `kyros=${JSON.stringify(auth[0].login.auth)}`)
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -102,7 +102,7 @@ describe('ROUTE: GET /trips', () => {
 
         request(api)
           .get(path(`/trips/${tripOneId}`))
-          .set('Cookie', `viatorem=${JSON.stringify(auth[1].login.auth)}`)
+          .set('Cookie', `kyros=${JSON.stringify(auth[1].login.auth)}`)
           .expect('Content-Type', /json/)
           .expect(401)
           .end(err => {
@@ -123,7 +123,7 @@ describe('ROUTE: GET /trips', () => {
 
       request(api)
         .get(path(`/trips/${tripOneId}`))
-        .set('Cookie', `viatorem=${JSON.stringify(auth[0].login.auth)}`)
+        .set('Cookie', `kyros=${JSON.stringify(auth[0].login.auth)}`)
         .expect('Content-Type', /json/)
         .expect(200)
         .end(err => {

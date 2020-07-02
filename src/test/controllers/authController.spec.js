@@ -78,7 +78,7 @@ describe('ROUTE: /auth/register', () => {
   })
 
   it('A POST to /auth/register should register a new user and return new name and email but not the password', done => {
-    User.count().then(count => {
+    User.countDocuments().then(count => {
       request(api)
         .post(path('/auth/register'))
         .send(userOneProps)
@@ -89,7 +89,7 @@ describe('ROUTE: /auth/register', () => {
             return done(new Error(`Supertest has encountered an error: ${err}`))
           }
 
-          User.count()
+          User.countDocuments()
             .then(newCount => {
               expect(newCount).to.equal(count + 1)
             })

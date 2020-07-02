@@ -5,7 +5,12 @@ import config from '../../config'
 const path = config.basePath
 
 before(done => {
-  mongoose.connect(config.db.testUri)
+  const options = { useNewUrlParser: true, useUnifiedTopology: true }
+
+  mongoose.connect(config.db.testUri, options)
+
+  mongoose.set('useCreateIndex', true)
+
   mongoose.connection
     .once('open', () => {
       console.log('Mongo connection open')
@@ -37,6 +42,6 @@ export const registerAndLoginUser = api => userProps =>
 export const createTrip = api => (loginResponse, props) => (
   request(api)
     .post(path('/trips'))
-    .set('Cookie', `viatorem=${JSON.stringify(loginResponse)}`)
+    .set('Cookie', `kyros=${JSON.stringify(loginResponse)}`)
     .send(props)
 )

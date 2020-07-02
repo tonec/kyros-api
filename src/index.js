@@ -7,7 +7,7 @@ import routes from './routes'
 import tasks from './tasks'
 import verifyToken from './utils/verifyToken'
 
-const port = process.env.PORT || process.env.APIPORT || 8080
+const port = process.env.API_PORT || 8080
 
 process.on('unhandledRejection', error => console.error('unhandledRejection error: ', error))
 
@@ -26,8 +26,7 @@ if (process.env.NODE_ENV !== 'test') {
 
   const options = {
     useNewUrlParser: true,
-    reconnectTries: Number.MAX_VALUE,
-    reconnectInterval: 500,
+    useUnifiedTopology: true,
     connectTimeoutMS: 10000
   }
 
@@ -41,29 +40,26 @@ if (process.env.NODE_ENV !== 'test') {
       console.log(err)
     })
 
+  mongoose.set('useCreateIndex', true)
+
   im.start()
 }
-
-app.get(
-  /\/dist\/(.*)?.*/,
-  restify.plugins.serveStatic({
-    directory: './dist',
-    appendRequestPath: false
-  })
-)
 
 app.use(cookieParser.parse)
 
 app.use((req, res, next) => {
-  const { viatorem } = req.cookies
-  const cookie = viatorem ? JSON.parse(viatorem) : null
+  const { kyros } = req.cookies
+  const cookie = kyros ? JSON.parse(kyros) : null
 
   if (cookie && cookie.accessToken) {
     const verified = verifyToken(cookie.accessToken)
+
     if (!verified) {
       req.user = null
     }
+
     req.user = verified
+
     next()
   } else {
     req.user = null
@@ -82,6 +78,7 @@ app.use((req, res, next) => {
 })
 
 routes(app)
+
 tasks()
 
 if (port) {
@@ -89,16 +86,11 @@ if (port) {
     if (err) {
       console.error(err)
     }
-    console.info('----\n==> 🌎  API is running on port %s', port)
-    console.info(
-      '==> 💻  Send requests to http://localhost:%s',
-      port
-    )
+    console.info(`API is running on port ${port}`)
+    console.info(`Send requests to http://localhost:${port}`)
   })
 } else {
-  console.error(
-    '==>     ERROR: No APIPORT environment variable has been specified'
-  )
+  console.error('No APIPORT environment variable has been specified')
 }
 
 export default app

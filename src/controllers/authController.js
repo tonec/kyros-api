@@ -74,8 +74,8 @@ export default {
 
   // Verify token
   verify: (req, res, next) => {
-    const { viatorem } = req.cookies
-    const cookie = viatorem ? JSON.parse(viatorem) : null
+    const { kyros } = req.cookies
+    const cookie = kyros ? JSON.parse(kyros) : null
 
     if (cookie && cookie.accessToken) {
       const verified = verifyToken(cookie.accessToken)
