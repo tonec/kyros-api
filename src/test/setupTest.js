@@ -1,13 +1,22 @@
+import 'babel-polyfill'
 import mongoose from 'mongoose'
 import request from 'supertest'
-import config from '../../config'
+import { path } from '../utils'
 
-const path = config.basePath
+beforeAll(async done => {
+  const {
+    MONGO_USERNAME,
+    MONGO_PASSWORD,
+    MONGO_HOSTNAME,
+    MONGO_PORT,
+    MONGO_DB
+  } = process.env
 
-before(done => {
   const options = { useNewUrlParser: true, useUnifiedTopology: true }
 
-  mongoose.connect(config.db.testUri, options)
+  const url = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}_test?authSource=admin`
+
+  mongoose.connect(url, options)
 
   mongoose.set('useCreateIndex', true)
 
@@ -21,8 +30,16 @@ before(done => {
     })
 })
 
-beforeEach(done => {
-  mongoose.connection.db.dropDatabase(() => done())
+async function removeAllCollections () {
+  const collections = Object.keys(mongoose.connection.collections)
+  for (const collectionName of collections) {
+    const collection = mongoose.connection.collections[collectionName]
+    await collection.deleteMany()
+  }
+}
+
+afterEach(async () => {
+  await removeAllCollections()
 })
 
 export const registerAndLoginUser = api => userProps =>

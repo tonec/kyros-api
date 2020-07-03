@@ -1,8 +1,6 @@
-import config from '../../config'
+import { path } from '../utils'
 import authController from '../controllers/authController'
 import tripController from '../controllers/tripController'
-
-const path = config.basePath
 
 export default app => {
   app.get(path('/trips'), authController.loginRequired, tripController.query)

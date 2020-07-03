@@ -1,9 +1,9 @@
 import authRoute from './authRoute'
+import testRoute from './testRoute'
 import userRoute from './userRoute'
-import tripRoute from './tripRoute'
 
 export default app => {
   authRoute(app)
+  testRoute(app)
   userRoute(app)
-  tripRoute(app)
 }

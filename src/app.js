@@ -5,11 +5,9 @@ import cookieParser from 'restify-cookies'
 import paginate from 'restify-paginate'
 import routes from './routes'
 import tasks from './tasks'
-import verifyToken from './utils/verifyToken'
+import { verifyToken } from './utils'
 
 require('dotenv').config()
-
-const port = process.env.API_PORT || 8080
 
 process.on('unhandledRejection', error => console.error('unhandledRejection error: ', error))
 
@@ -86,17 +84,5 @@ app.use((req, res, next) => {
 routes(app)
 
 tasks()
-
-if (port) {
-  app.listen(port, err => {
-    if (err) {
-      console.error(err)
-    }
-    console.info(`API is running on port ${port}`)
-    console.info(`Send requests to http://localhost:${port}`)
-  })
-} else {
-  console.error('No APIPORT environment variable has been specified')
-}
 
 export default app

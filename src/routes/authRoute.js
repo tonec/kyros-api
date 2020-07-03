@@ -1,7 +1,5 @@
 import authController from '../controllers/authController'
-import config from '../../config'
-
-const path = config.basePath
+import { path } from '../utils'
 
 export default app => {
   app.get(path('/auth/verify'), authController.verify)

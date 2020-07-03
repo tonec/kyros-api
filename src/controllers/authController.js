@@ -13,7 +13,6 @@ export default {
       name: body.name,
       email: body.email,
       password: body.password
-      // password: bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
     }
 
     if (!body.name || !body.email || !body.password) {
@@ -30,6 +29,8 @@ export default {
       res.send(500, validation.error.details)
       return
     }
+
+    User.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
 
     User.save()
       .then(user => {
@@ -97,13 +98,13 @@ export default {
 
   // Protected route
   loginRequired: (req, res, next) => {
-    console.log('before______________', req.user)
+    // console.log('before______________', req.user)
     if (req.user) {
-      console.log('inside_____________', req.user)
+      // console.log('inside_____________', req.user)
       return next()
     }
 
-    console.log('after+++++++++++', req.user)
+    // console.log('after+++++++++++', req.user)
 
     return res.send(
       new UnauthorizedError({

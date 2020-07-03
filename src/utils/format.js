@@ -11,7 +11,7 @@ export default (type, data, req, res) => {
 
   if (parsed.data.length > 0) {
     response[type] = parsed.data.reduce((acc, item) => {
-      let newItem = {
+      const newItem = {
         id: item._id,
         ...omit(item, ['_id', '__v'])
       }
