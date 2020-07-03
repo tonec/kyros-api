@@ -51,17 +51,13 @@ export default {
     UserModel.findOne({ email: req.body.email }).then(user => {
       if (!user) {
         return res.send(
-          new UnauthorizedError({
-            message: 'Authentication failed. User not found.'
-          })
+          new UnauthorizedError('Authentication failed. User not found.')
         )
       }
 
       if (!user.comparePasswords(req.body.password)) {
         return res.send(
-          new UnauthorizedError({
-            message: 'Authentication failed. The password entered does not match our records.'
-          })
+          new UnauthorizedError('Authentication failed. The password entered does not match our records.')
         )
       }
 

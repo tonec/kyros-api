@@ -107,56 +107,78 @@ describe('ROUTE: /auth/register', () => {
   })
 })
 
-// describe('ROUTE: /auth/login', () => {
-//   beforeEach(done => {
-//     request(api)
-//       .post(path('/auth/register'))
-//       .send(userOneProps)
-//       .expect('Content-type', /json/)
-//       .expect(200)
-//       .end(err => {
-//         if (err) {
-//           return done(new Error(`Supertest has encountered an error: ${err}`))
-//         }
-//         done()
-//       })
-//   })
+describe('ROUTE: /auth/login', () => {
+  beforeEach(done => {
+    request.post(path('/auth/register'))
+      .send({
+        name: 'Joe Bloggs',
+        email: 'joe-bloggs@example.com',
+        password: '1234567890'
+      })
+      .expect('Content-type', /json/)
+      .expect(200)
+      .end(err => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+        done()
+      })
+  })
 
-//   it('A POST to /auth/login should reject invalid users', done => {
-//     request(api)
-//       .post(path('/auth/login'))
-//       .send({
-//         email: 'not-registered@example.com',
-//         password: '1234'
-//       })
-//       .end((err, res) => {
-//         if (err) {
-//           return done(new Error(`Supertest has encountered an error: ${err}`))
-//         }
-//         expect(res.status).to.equal(401)
-//         expect(res.body.code).to.equal('Unauthorized')
-//         expect(res.body.message).to.equal(
-//           'Authentication failed. User not found.'
-//         )
-//         done()
-//       })
-//   })
+  it('A POST should reject a login with an invalid user', done => {
+    request.post(path('/auth/login'))
+      .send({
+        email: 'not-registered@example.com',
+        password: '1234567890'
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
 
-//   it('A POST to /auth/login should return a token for valid users', done => {
-//     request(api)
-//       .post(path('/auth/login'))
-//       .send({
-//         email: userOneProps.email,
-//         password: userOneProps.password
-//       })
-//       .end((err, res) => {
-//         if (err) {
-//           return done(new Error(`Supertest has encountered an error: ${err}`))
-//         }
-//         expect(res.status).to.equal(200)
-//         expect(res.body.user.name).to.equal(userOneProps.name)
-//         expect(res.body.auth.accessToken).to.not.equal(undefined)
-//         done()
-//       })
-//   })
-// })
+        expect(res.status).toBe(401)
+        expect(res.body.code).toBe('Unauthorized')
+        expect(res.body.message).toBe('Authentication failed. User not found.')
+
+        done()
+      })
+  })
+
+  it('A POST should reject a login with an invalid password', done => {
+    request.post(path('/auth/login'))
+      .send({
+        email: 'joe-bloggs@example.com',
+        password: 'wrong_password'
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+
+        expect(res.status).toBe(401)
+        expect(res.body.code).toBe('Unauthorized')
+        expect(res.body.message).toBe('Authentication failed. The password entered does not match our records.')
+
+        done()
+      })
+  })
+
+  it('A POST to /auth/login should return a token for valid users', done => {
+    request.post(path('/auth/login'))
+      .send({
+        email: 'joe-bloggs@example.com',
+        password: '1234567890'
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+
+        expect(res.status).toBe(200)
+        expect(res.body.user.name).toBe('Joe Bloggs')
+        expect(res.body.auth.accessToken).toBeTruthy()
+
+        done()
+      })
+  })
+})
