@@ -1,2 +1,2 @@
-export { default as userModel } from './userModel'
-export { default as resourceModel } from './resourceModel'
+export { default as UserModel } from './UserModel'
+export { default as ResourceModel } from './ResourceModel'

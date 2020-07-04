@@ -1,6 +1,6 @@
 import errors from 'restify-errors'
 import format from '../utils/format'
-import Resource from '../models/resourceModel'
+import Resource from '../models/ResourceModel'
 
 export default {
   query: (req, res) => {

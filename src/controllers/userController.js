@@ -1,4 +1,4 @@
-import User from '../models/userModel'
+import User from '../models/UserModel'
 
 export default {
   query: (req, res, next) => {

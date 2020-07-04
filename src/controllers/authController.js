@@ -1,7 +1,7 @@
 import { UnauthorizedError, BadRequestError } from 'restify-errors'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt-nodejs'
-import UserModel from '../models/userModel'
+import UserModel from '../models/UserModel'
 import verifyToken from '../utils/verifyToken'
 
 export default {
