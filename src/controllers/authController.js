@@ -97,20 +97,5 @@ export default {
     }
 
     res.send(null)
-  },
-
-  // Protected route
-  loginRequired: (req, res, next) => {
-    // console.log('before______________', req.user)
-    if (req.user) {
-      // console.log('inside_____________', req.user)
-      return next()
-    }
-
-    // console.log('after+++++++++++', req.user)
-
-    return next(
-      new UnauthorizedError('Unauthorised usesssssssssssssr.')
-    )
   }
 }
