@@ -1,11 +1,11 @@
 import errors from 'restify-errors'
 import format from '../utils/format'
-import Trip from '../models/tripModel'
+import Resource from '../models/resourceModel'
 
 export default {
   query: (req, res) => {
     console.log('user ________________________-', req.user)
-    Trip.find({ user: req.user._id })
+    Resource.find({ user: req.user._id })
       .then(trips => {
         res.json(format('trips', trips, req, res))
       })
@@ -19,7 +19,7 @@ export default {
   },
 
   detail: (req, res, next) => {
-    Trip.findById(req.params.id)
+    Resource.findById(req.params.id)
       .then(trip => {
         if (trip.user.toString() !== req.user._id) {
           res.json(
@@ -42,7 +42,7 @@ export default {
   },
 
   insert: (req, res) => {
-    Trip.create({
+    Resource.create({
       title: req.body.title,
       description: req.body.description,
       startDate: req.body.startDate,
