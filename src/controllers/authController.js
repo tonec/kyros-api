@@ -1,54 +1,9 @@
-import { UnauthorizedError, BadRequestError } from 'restify-errors'
+import { UnauthorizedError } from 'restify-errors'
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcrypt-nodejs'
 import UserModel from '../models/UserModel'
 import verifyToken from '../utils/verifyToken'
 
 export default {
-  register: (req, res, next) => {
-    const { body } = req
-
-    const userProps = {
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      password: body.password
-    }
-
-    const User = new UserModel(userProps)
-
-    const validation = User.joiValidate(userProps)
-
-    if (validation.error) {
-      next(
-        new BadRequestError({
-          cause: validation.error,
-        }, 'User not registered')
-      )
-      return
-    }
-
-    User.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
-
-    User.save()
-      .then(user => {
-        res.json({
-          _id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          message: 'New user registered successfully'
-        })
-      })
-      .catch(error => {
-        next(
-          new BadRequestError({
-            cause: error,
-          }, 'User not registered')
-        )
-      })
-  },
-
   login: (req, res, next) => {
     UserModel.findOne({ email: req.body.email }).then(user => {
       if (!user) {

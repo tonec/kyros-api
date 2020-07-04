@@ -2,9 +2,9 @@ import { path, isAuthorized } from '../utils'
 import userController from '../controllers/userController'
 
 export default app => {
-  app.get(path('/users'), isAuthorized, userController.query)
-  app.get(path('/users/:id'), isAuthorized, userController.detail)
-  app.post(path('/users'), isAuthorized, userController.insert)
-  // app.patch(path('/users/'), authController.loginRequired, userController.update)
-  // app.del(path('/users/'), authController.loginRequired, userController.delete)
+  app.post(path('/user'), userController.create)
+  // app.get(path('/user'), isAuthorized, userController.get)
+  // app.get(path('/user/:id'), isAuthorized, userController.find)
+  // app.patch(path('/user/'), isAuthorized, userController.patch)
+  // app.del(path('/user/'), isAuthorized, userController.delete)
 }
