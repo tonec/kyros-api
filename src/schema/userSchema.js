@@ -4,7 +4,12 @@ import bcrypt from 'bcrypt-nodejs'
 import beautifyUnique from 'mongoose-beautiful-unique-validation'
 
 const UserSchema = new mongoose.Schema({
-  name: {
+  firstName: {
+    type: String,
+    trim: true,
+    required: true
+  },
+  lastName: {
     type: String,
     trim: true,
     required: true
@@ -20,7 +25,15 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  super: {
+    type: Boolean,
+    default: false
+  },
   created: {
+    type: Date,
+    default: Date.now
+  },
+  modified: {
     type: Date,
     default: Date.now
   }
@@ -28,10 +41,13 @@ const UserSchema = new mongoose.Schema({
 
 UserSchema.methods.joiValidate = obj => {
   return Joi.object({
-    name: Joi.string().required(),
+    firstName: Joi.string().required(),
+    lastName: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).max(30).regex(/[a-zA-Z0-9]{3,30}/).required(),
-    created: Joi.date()
+    super: Joi.boolean(),
+    created: Joi.date(),
+    modified: Joi.date()
   }).validate(obj)
 }
 

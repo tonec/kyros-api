@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 export default token => {
-  return jwt.verify(token, 'some secret', (error, decode) => {
+  return jwt.verify(token, process.env.JWT_SECTRET, (error, decode) => {
     if (error) {
       return null
     }

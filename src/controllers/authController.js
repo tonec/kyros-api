@@ -1,24 +1,18 @@
-import { BadRequestError, UnauthorizedError } from 'restify-errors'
+import { UnauthorizedError, BadRequestError } from 'restify-errors'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt-nodejs'
 import UserModel from '../models/userModel'
 import verifyToken from '../utils/verifyToken'
 
 export default {
-  // User registration
   register: (req, res, next) => {
     const { body } = req
 
     const userProps = {
-      name: body.name,
+      firstName: body.firstName,
+      lastName: body.lastName,
       email: body.email,
       password: body.password
-    }
-
-    if (!body.name || !body.email || !body.password) {
-      return res.send(
-        new BadRequestError('Incomplete registration information.')
-      )
     }
 
     const User = new UserModel(userProps)
@@ -26,7 +20,11 @@ export default {
     const validation = User.joiValidate(userProps)
 
     if (validation.error) {
-      res.send(500, validation.error.details)
+      next(
+        new BadRequestError({
+          cause: validation.error,
+        }, 'User not registered')
+      )
       return
     }
 
@@ -36,38 +34,48 @@ export default {
       .then(user => {
         res.json({
           _id: user._id,
-          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
-          message: 'New user registered successfully.'
+          message: 'New user registered successfully'
         })
       })
-      .catch(err => {
-        res.send(500, err.errors)
+      .catch(error => {
+        next(
+          new BadRequestError({
+            cause: error,
+          }, 'User not registered')
+        )
       })
   },
 
-  // User login
   login: (req, res, next) => {
     UserModel.findOne({ email: req.body.email }).then(user => {
       if (!user) {
-        return res.send(
-          new UnauthorizedError('Authentication failed. User not found.')
+        return next(
+          new UnauthorizedError('User not found')
         )
       }
 
       if (!user.comparePasswords(req.body.password)) {
-        return res.send(
-          new UnauthorizedError('Authentication failed. The password entered does not match our records.')
+        return next(
+          new UnauthorizedError('The password entered does not match our records')
         )
       }
 
       res.json({
         user: {
           _id: user._id,
-          name: user.name
+          firstName: user.firstName,
+          lastName: user.lastName
         },
         auth: {
-          accessToken: jwt.sign({ name: user.name, email: user.email, _id: user._id }, 'some secret'),
+          accessToken: jwt.sign({
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email
+          }, process.env.JWT_SECTRET),
           expires: 1
         }
       })
@@ -75,7 +83,6 @@ export default {
       .catch(next)
   },
 
-  // Verify token
   verify: (req, res, next) => {
     const { kyros } = req.cookies
     const cookie = kyros ? JSON.parse(kyros) : null
@@ -102,10 +109,8 @@ export default {
 
     // console.log('after+++++++++++', req.user)
 
-    return res.send(
-      new UnauthorizedError({
-        message: 'Unauthorised usesssssssssssssr.'
-      })
+    return next(
+      new UnauthorizedError('Unauthorised usesssssssssssssr.')
     )
   }
 }

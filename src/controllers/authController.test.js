@@ -8,9 +8,10 @@ const request = supertest(app)
 const User = mongoose.model('User')
 
 describe('ROUTE: /auth/register', () => {
-  it('A POST with missing name should be a bad request', async done => {
+  it('A POST with missing first name should be a bad request', async done => {
     request.post(path('/auth/register'))
       .send({
+        lastName: 'Bloggs',
         email: 'joe-bloggs@example.com',
         password: '1234567890'
       })
@@ -22,7 +23,28 @@ describe('ROUTE: /auth/register', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('Incomplete registration information.')
+        expect(res.body.message).toBe('User not registered')
+
+        done()
+      })
+  })
+
+  it('A POST with missing last name should be a bad request', async done => {
+    request.post(path('/auth/register'))
+      .send({
+        firstName: 'Joe',
+        email: 'joe-bloggs@example.com',
+        password: '1234567890'
+      })
+      .expect('Content-type', /json/)
+      .end((err, res) => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+
+        expect(res.status).toBe(400)
+        expect(res.body.code).toBe('BadRequest')
+        expect(res.body.message).toBe('User not registered')
 
         done()
       })
@@ -31,7 +53,8 @@ describe('ROUTE: /auth/register', () => {
   it('A POST with missing email should be a bad request', done => {
     request.post(path('/auth/register'))
       .send({
-        name: 'Joe Bloggs',
+        firstName: 'Joe',
+        lastName: 'Bloggs',
         password: '1234'
       })
       .expect('Content-type', /json/)
@@ -42,7 +65,7 @@ describe('ROUTE: /auth/register', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('Incomplete registration information.')
+        expect(res.body.message).toBe('User not registered')
 
         done()
       })
@@ -51,7 +74,8 @@ describe('ROUTE: /auth/register', () => {
   it('A POST with missing password should be a bad request', done => {
     request.post(path('/auth/register'))
       .send({
-        name: 'Joe Bloggs',
+        firstName: 'Joe',
+        lastName: 'Bloggs',
         email: 'joe-bloggs@example.com'
       })
       .expect('Content-type', /json/)
@@ -62,7 +86,7 @@ describe('ROUTE: /auth/register', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('Incomplete registration information.')
+        expect(res.body.message).toBe('User not registered')
 
         done()
       })
@@ -72,7 +96,8 @@ describe('ROUTE: /auth/register', () => {
     User.countDocuments().then(count => {
       request.post(path('/auth/register'))
         .send({
-          name: 'Joe Bloggs',
+          firstName: 'Joe',
+          lastName: 'Bloggs',
           email: 'joe-bloggs@example.com',
           password: '1234567890'
         })
@@ -92,12 +117,14 @@ describe('ROUTE: /auth/register', () => {
           const user = await User.findOne({ email: 'joe-bloggs@example.com' })
 
           expect(user._id).toBeTruthy()
-          expect(user.name).toBe('Joe Bloggs')
+          expect(user.firstName).toBe('Joe')
+          expect(user.lastName).toBe('Bloggs')
           expect(user.email).toBe('joe-bloggs@example.com')
           expect(user.password).toBeTruthy()
           expect(user.password).not.toBe('1234567890')
 
-          expect(res.body.name).toBe('Joe Bloggs')
+          expect(res.body.firstName).toBe('Joe')
+          expect(res.body.lastName).toBe('Bloggs')
           expect(res.body.email).toBe('joe-bloggs@example.com')
           expect(res.body.password).toBe(undefined)
 
@@ -111,7 +138,8 @@ describe('ROUTE: /auth/login', () => {
   beforeEach(done => {
     request.post(path('/auth/register'))
       .send({
-        name: 'Joe Bloggs',
+        firstName: 'Joe',
+        lastName: 'Bloggs',
         email: 'joe-bloggs@example.com',
         password: '1234567890'
       })
@@ -138,7 +166,7 @@ describe('ROUTE: /auth/login', () => {
 
         expect(res.status).toBe(401)
         expect(res.body.code).toBe('Unauthorized')
-        expect(res.body.message).toBe('Authentication failed. User not found.')
+        expect(res.body.message).toBe('User not found')
 
         done()
       })
@@ -157,7 +185,7 @@ describe('ROUTE: /auth/login', () => {
 
         expect(res.status).toBe(401)
         expect(res.body.code).toBe('Unauthorized')
-        expect(res.body.message).toBe('Authentication failed. The password entered does not match our records.')
+        expect(res.body.message).toBe('The password entered does not match our records')
 
         done()
       })
@@ -175,7 +203,8 @@ describe('ROUTE: /auth/login', () => {
         }
 
         expect(res.status).toBe(200)
-        expect(res.body.user.name).toBe('Joe Bloggs')
+        expect(res.body.user.firstName).toBe('Joe')
+        expect(res.body.user.lastName).toBe('Bloggs')
         expect(res.body.auth.accessToken).toBeTruthy()
 
         done()

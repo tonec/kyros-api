@@ -44,6 +44,7 @@
     "qs": "^6.5.1",
     "restify": "^8.5.1",
     "restify-cookies": "^0.2.2",
+    "restify-errors": "^8.0.2",
     "restify-paginate": "^0.0.5"
   },
   "lint-staged": {

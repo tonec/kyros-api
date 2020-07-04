@@ -81,6 +81,19 @@ app.use((req, res, next) => {
   return next()
 })
 
+app.on('restifyError', (req, res, err, callback) => {
+  err.toJSON = () => {
+    return {
+      ...err.body,
+      cause: err.jse_cause
+    }
+  }
+  err.toString = () => {
+    return 'i just want a string'
+  }
+  return callback()
+})
+
 routes(app)
 
 tasks()
