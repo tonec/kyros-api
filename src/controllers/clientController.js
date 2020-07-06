@@ -77,8 +77,8 @@ export default {
       next(
         new BadRequestError({
           cause: err,
-        }, 'Error updating client')
+        }, 'Error removing client')
       )
     }
-  },
+  }
 }

@@ -245,53 +245,79 @@ describe('GET: /user', () => {
       })
   })
 
-//   it('A GET to /user should return a list of users', done => {
-//     request.get(path('/user'))
-//       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
-//       .expect('Content-Type', /json/)
-//       .expect(200)
-//       .end((err, res) => {
-//         if (err) {
-//           return done(new Error(`Supertest has encountered an error: ${err}`))
-//         }
-//         expect(res.body.length).toBe(2)
-//         expect(
-//           res.body.filter(user => user.name === 'Joe Bloggs').length
-//         ).to.equal(1)
-//         expect(
-//           res.body.filter(user => user.name === 'Jill Bloggs').length
-//         ).to.equal(1)
-//         done()
-//       })
-//   })
+  it('A GET to /user should return a list of users', done => {
+    request.get(path('/user'))
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+
+        const { action, entity, data } = res.body
+
+        expect(action).toBe('store')
+        expect(entity).toBe('user')
+        expect(data.entities.length).toBe(2)
+
+        done()
+      })
+  })
 })
 
-//   it('A GET to /users/:id should require authorization', done => {
-//     request(api)
-//       .get(path(`/users/${userOne._id}`))
-//       .expect(401)
-//       .end(err => {
-//         if (err) {
-//           return done(new Error(`Supertest has encountered an error: ${err}`))
-//         }
-//         done()
-//       })
-//   })
+describe('PATCH: /user/:id', () => {
+  let userOne
+  let userTwo
 
-//   it('A GET to /users/:id should return a specific user', done => {
-//     request(api)
-//       .get(path(`/users/${userOne._id}`))
-//       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
-//       .expect('Content-Type', /json/)
-//       .expect(200)
-//       .end((err, res) => {
-//         if (err) {
-//           return done(new Error(`Supertest has encountered an error: ${err}`))
-//         }
-//         expect(res.body.name).to.equal(userOne.name)
-//         expect(res.body.email).to.equal(userOne.email)
-//         expect(res.body.password).to.equal(undefined)
-//         done()
-//       })
-//   })
-// })
+  beforeEach(done => {
+    userOne = new User(userOneProps)
+    userTwo = new User(userTwoProps)
+
+    Promise.all([userOne.save(), userTwo.save()]).then(() => done())
+  })
+
+  it('should require authorization', done => {
+    request.get(path('/user'))
+      .send(userOneProps)
+      .expect('Content-type', /json/)
+      .expect(401)
+      .end(err => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+        done()
+      })
+  })
+
+  it('A PATCH should update the user', done => {
+    request.patch(path(`/user/${userOne._id}`))
+      .send({
+        firstName: 'Fred',
+        lastName: 'Smith'
+      })
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
+      .expect('Content-type', /json/)
+      .expect(200)
+      .end(async (err, res) => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+
+        const user = await User.findById(userOne._id)
+
+        expect(user.firstName).toBe('Fred')
+        expect(user.lastName).toBe('Smith')
+
+        const { action, entity, data } = res.body
+
+        expect(action).toBe('store')
+        expect(entity).toBe('user')
+
+        expect(data.entities[0].firstName).toBe('Fred')
+        expect(data.entities[0].lastName).toBe('Smith')
+
+        done()
+      })
+  })
+})

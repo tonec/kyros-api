@@ -54,27 +54,50 @@ export default {
   },
 
   find: async (req, res, next) => {
-    const query = req.body
-
-    if (!query) {
-      next(
-        new BadRequestError('Missing')
-      )
-      return
-    }
-
     try {
-      const data = await User.find(query)
+      const data = await User.find()
 
       res.json(format({ entity: 'user', data, req, res }))
     } catch (err) {
-      next(err)
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'Error fetching users')
+      )
     }
   },
 
-  patch: () => {},
+  patch: async (req, res, next) => {
+    try {
+      await User.updateOne({ _id: req.params.id }, req.body)
 
-  update: () => {},
+      const data = await User.findById(req.params.id)
 
-  remove: () => {}
+      res.json(format({ entity: 'user', data, req, res }))
+
+    } catch (err) {
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'Error updating user')
+      )
+    }
+  },
+
+  remove: async (req, res, next) => {
+    try {
+      const data = await User.findById(req.params.id)
+
+      await User.remove({ _id: req.params.id })
+
+      res.json(format({ action: 'remove', entity: 'user', data, req, res }))
+
+    } catch (err) {
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'Error removing user')
+      )
+    }
+  }
 }

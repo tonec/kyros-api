@@ -5,6 +5,6 @@ export default app => {
   app.post(path('/user'), isAuthorized, userController.create)
   app.get(path('/user/:id'), isAuthorized, userController.get)
   app.get(path('/user'), isAuthorized, userController.find)
-  // app.patch(path('/user/'), isAuthorized, userController.patch)
-  // app.del(path('/user/'), isAuthorized, userController.delete)
+  app.patch(path('/user/:id'), isAuthorized, userController.patch)
+  app.del(path('/user/:id'), isAuthorized, userController.remove)
 }
