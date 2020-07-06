@@ -13,7 +13,6 @@ const ResourceSchema = mongoose.Schema({
   client: {
     type: String,
     trim: true,
-    required: true
   },
   resourceType: {
     type: String,

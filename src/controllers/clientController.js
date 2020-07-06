@@ -5,9 +5,7 @@ import Client from '../models/ClientModel'
 export default {
   create: async (req, res, next) => {
     try {
-      const data = await Client.create({
-        name: req.body.name,
-      })
+      const data = await Client.create(req.body)
 
       res.json(format({ entity: 'client', data, req, res }))
 

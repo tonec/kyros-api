@@ -7,12 +7,7 @@ export default {
   create: async (req, res, next) => {
     const { body } = req
 
-    const userProps = {
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      password: body.password
-    }
+    const userProps = req.body
 
     const user = new User(userProps)
 

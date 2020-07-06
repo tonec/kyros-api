@@ -1,71 +1,82 @@
-import errors from 'restify-errors'
-import format from '../utils/format'
+import { BadRequestError } from 'restify-errors'
+import { format } from '../utils'
 import Resource from '../models/ResourceModel'
 
 export default {
-  query: (req, res) => {
-    console.log('user ________________________-', req.user)
-    Resource.find({ user: req.user._id })
-      .then(trips => {
-        res.json(format('trips', trips, req, res))
-      })
-      .catch(err => {
-        res.send(
-          new errors.BadRequestError({
-            message: err.message
-          })
-        )
-      })
+  create: async (req, res, next) => {
+    try {
+      const data = await Resource.create(req.body)
+
+      res.json(format({ entity: 'resource', data, req, res }))
+
+    } catch (err) {
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'Resource not created')
+      )
+    }
   },
 
-  detail: (req, res, next) => {
-    Resource.findById(req.params.id)
-      .then(trip => {
-        if (trip.user.toString() !== req.user._id) {
-          res.json(
-            new errors.UnauthorizedError({
-              message:
-                'Request failed. You do not have permission to access this resource.'
-            })
-          )
-        }
-        res.json({
-          id: trip._id,
-          title: trip.title,
-          description: trip.description,
-          startDate: trip.startDate,
-          endDate: trip.endDate,
-          user: trip.user._id
-        })
-      })
-      .catch(next)
+  get: async (req, res, next) => {
+    try {
+      const data = await Resource.findById(req.params.id)
+
+      res.json(format({ entity: 'resource', data, req, res }))
+    } catch (err) {
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'Error fetching resource')
+      )
+    }
   },
 
-  insert: (req, res) => {
-    Resource.create({
-      title: req.body.title,
-      description: req.body.description,
-      startDate: req.body.startDate,
-      endDate: req.body.endDate,
-      user: req.user._id
-    })
-      .then(trip => {
-        res.json(trip)
-      })
-      .catch(err => {
-        res.send(
-          new errors.BadRequestError({
-            message: err.message
-          })
-        )
-      })
+  find: async (req, res, next) => {
+    try {
+      const data = await Resource.find()
+
+      res.json(format({ entity: 'resource', data, req, res }))
+    } catch (err) {
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'Error fetching resource')
+      )
+    }
   },
 
-  update: (req, res) => {
-    // TODO: implement this
+  patch: async (req, res, next) => {
+    try {
+      await Resource.updateOne({ _id: req.params.id }, req.body)
+
+      const data = await Resource.findById(req.params.id)
+
+      res.json(format({ entity: 'resource', data, req, res }))
+
+    } catch (err) {
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'Error updating resource')
+      )
+    }
   },
 
-  delete: (req, res) => {
-    // TODO: implement this
+  remove: async (req, res, next) => {
+    try {
+      const data = await Resource.findById(req.params.id)
+
+      await Resource.remove({ _id: req.params.id })
+
+      res.json(format({ action: 'remove', entity: 'resource', data, req, res }))
+
+    } catch (err) {
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'Error removing resource')
+      )
+    }
   }
 }
