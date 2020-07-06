@@ -1,7 +1,7 @@
 import { BadRequestError } from 'restify-errors'
 import bcrypt from 'bcrypt-nodejs'
 import { format } from '../utils'
-import UserModel from '../models/UserModel'
+import User from '../models/UserModel'
 
 export default {
   create: async (req, res, next) => {
@@ -14,9 +14,9 @@ export default {
       password: body.password
     }
 
-    const User = new UserModel(userProps)
+    const user = new User(userProps)
 
-    const validation = User.joiValidate(userProps)
+    const validation = user.joiValidate(userProps)
 
     if (validation.error) {
       next(
@@ -27,10 +27,10 @@ export default {
       return
     }
 
-    User.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
+    user.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
 
     try {
-      const data = await User.save()
+      const data = await user.save()
 
       res.json(format({ entity: 'user', omit: ['password'], data, req, res }))
 
@@ -45,7 +45,7 @@ export default {
 
   get: async (req, res, next) => {
     try {
-      const data = await UserModel.findById(req.params.id)
+      const data = await User.findById(req.params.id)
 
       res.json(format({ entity: 'user', data, req, res }))
     } catch (err) {
@@ -64,7 +64,7 @@ export default {
     }
 
     try {
-      const data = await UserModel.find(query)
+      const data = await User.find(query)
 
       res.json(format({ entity: 'user', data, req, res }))
     } catch (err) {

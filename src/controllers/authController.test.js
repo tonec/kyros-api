@@ -1,6 +1,7 @@
 import supertest from 'supertest'
 import app from '../app'
 import { path } from '../utils'
+import cookie from '../test/test-cookie'
 
 const request = supertest(app)
 
@@ -13,6 +14,7 @@ describe('ROUTE: /auth/login', () => {
         email: 'joe-bloggs@example.com',
         password: '1234567890'
       })
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
       .expect(200)
       .end(err => {

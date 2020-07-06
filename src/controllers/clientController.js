@@ -1,11 +1,11 @@
 import { BadRequestError } from 'restify-errors'
 import { format } from '../utils'
-import ClientModel from '../models/ClientModel'
+import Client from '../models/ClientModel'
 
 export default {
   create: async (req, res, next) => {
     try {
-      const data = await ClientModel.create({
+      const data = await Client.create({
         name: req.body.name,
       })
 
@@ -22,7 +22,7 @@ export default {
 
   get: async (req, res, next) => {
     try {
-      const data = await ClientModel.findById(req.params.id)
+      const data = await Client.findById(req.params.id)
 
       res.json(format({ entity: 'client', data, req, res }))
     } catch (err) {
@@ -36,7 +36,7 @@ export default {
 
   find: async (req, res, next) => {
     try {
-      const data = await ClientModel.find()
+      const data = await Client.find()
 
       res.json(format({ entity: 'client', data, req, res }))
     } catch (err) {
@@ -50,9 +50,9 @@ export default {
 
   patch: async (req, res, next) => {
     try {
-      await ClientModel.updateOne({ _id: req.params.id }, req.body)
+      await Client.updateOne({ _id: req.params.id }, req.body)
 
-      const data = await ClientModel.findById(req.params.id)
+      const data = await Client.findById(req.params.id)
 
       res.json(format({ entity: 'client', data, req, res }))
 
@@ -67,9 +67,9 @@ export default {
 
   remove: async (req, res, next) => {
     try {
-      const data = await ClientModel.findById(req.params.id)
+      const data = await Client.findById(req.params.id)
 
-      await ClientModel.remove({ _id: req.params.id })
+      await Client.remove({ _id: req.params.id })
 
       res.json(format({ action: 'remove', entity: 'client', data, req, res }))
 

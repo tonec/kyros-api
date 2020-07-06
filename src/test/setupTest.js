@@ -55,10 +55,3 @@ export const registerAndLoginUser = api => userProps =>
           login: login.body
         }))
     )
-
-export const createTrip = api => (loginResponse, props) => (
-  request(api)
-    .post(path('/trips'))
-    .set('Cookie', `kyros=${JSON.stringify(loginResponse)}`)
-    .send(props)
-)

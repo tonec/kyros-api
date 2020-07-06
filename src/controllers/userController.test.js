@@ -23,6 +23,24 @@ const userTwoProps = {
 const User = mongoose.model('User')
 
 describe('POST: /user', () => {
+  it('should require authorization', done => {
+    request.get(path('/user'))
+      .send({
+        firstName: 'Joe',
+        lastName: 'Bloggs',
+        email: 'joe-bloggs@example.com',
+        password: '1234567890'
+      })
+      .expect('Content-type', /json/)
+      .expect(401)
+      .end(err => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+        done()
+      })
+  })
+
   it('A POST with missing first name should be a bad request', async done => {
     request.post(path('/user'))
       .send({
@@ -30,6 +48,7 @@ describe('POST: /user', () => {
         email: 'joe-bloggs@example.com',
         password: '1234567890'
       })
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
       .end((err, res) => {
         if (err) {
@@ -51,6 +70,7 @@ describe('POST: /user', () => {
         email: 'joe-bloggs@example.com',
         password: '1234567890'
       })
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
       .end((err, res) => {
         if (err) {
@@ -72,6 +92,7 @@ describe('POST: /user', () => {
         lastName: 'Bloggs',
         password: '1234'
       })
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
       .end((err, res) => {
         if (err) {
@@ -93,6 +114,7 @@ describe('POST: /user', () => {
         lastName: 'Bloggs',
         email: 'joe-bloggs@example.com'
       })
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
       .end((err, res) => {
         if (err) {
@@ -107,7 +129,7 @@ describe('POST: /user', () => {
       })
   })
 
-  it('A POST should create a new user and return new name and email but not the password', done => {
+  it('A POST should create a new user', done => {
     User.countDocuments().then(count => {
       request.post(path('/user'))
         .send({
@@ -116,6 +138,7 @@ describe('POST: /user', () => {
           email: 'joe-bloggs@example.com',
           password: '1234567890'
         })
+        .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
         .expect('Content-type', /json/)
         .expect(200)
         .end(async (err, res) => {
@@ -131,8 +154,6 @@ describe('POST: /user', () => {
 
           const user = await User.findOne({ email: 'joe-bloggs@example.com' })
 
-          const { data: { entities } } = res.body
-
           expect(user.id).toBeTruthy()
           expect(user.firstName).toBe('Joe')
           expect(user.lastName).toBe('Bloggs')
@@ -140,10 +161,15 @@ describe('POST: /user', () => {
           expect(user.password).toBeTruthy()
           expect(user.password).not.toBe('1234567890')
 
-          expect(entities[0].firstName).toBe('Joe')
-          expect(entities[0].lastName).toBe('Bloggs')
-          expect(entities[0].email).toBe('joe-bloggs@example.com')
-          expect(entities[0].password).toBe(undefined)
+          const { action, entity, data } = res.body
+
+          expect(action).toBe('store')
+          expect(entity).toBe('user')
+
+          expect(data.entities[0].firstName).toBe('Joe')
+          expect(data.entities[0].lastName).toBe('Bloggs')
+          expect(data.entities[0].email).toBe('joe-bloggs@example.com')
+          expect(data.entities[0].password).toBe(undefined)
 
           done()
         })
@@ -174,20 +200,23 @@ describe('GET: /user/:id', () => {
 
   it('should return the user with that id', async done => {
     request.get(path(`/user/${id}`))
-      .expect('Content-type', /json/)
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
+      .expect('Content-type', /json/)
+      .expect(200)
       .end((err, res) => {
         if (err) {
           return done(new Error(`Supertest has encountered an error: ${err}`))
         }
 
-        const { data: { entities } } = res.body
+        const { action, entity, data } = res.body
 
-        expect(res.status).toBe(200)
-        expect(entities[0].id).toBe(id)
-        expect(entities[0].firstName).toBe('Joe')
-        expect(entities[0].lastName).toBe('Bloggs')
-        expect(entities[0].email).toBe('joe-bloggs@example.com')
+        expect(action).toBe('store')
+        expect(entity).toBe('user')
+
+        expect(data.entities[0].id).toBe(id)
+        expect(data.entities[0].firstName).toBe('Joe')
+        expect(data.entities[0].lastName).toBe('Bloggs')
+        expect(data.entities[0].email).toBe('joe-bloggs@example.com')
 
         done()
       })
