@@ -1,4 +1,4 @@
-import { BadRequestError, UnauthorizedError } from 'restify-errors'
+import { BadRequestError } from 'restify-errors'
 import { format } from '../utils'
 import ClientModel from '../models/ClientModel'
 
