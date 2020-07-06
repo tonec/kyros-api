@@ -88,9 +88,6 @@ app.on('restifyError', (req, res, err, callback) => {
       cause: err.jse_cause
     }
   }
-  err.toString = () => {
-    return 'i just want a string'
-  }
   return callback()
 })
 

@@ -1,9 +1,10 @@
 import { BadRequestError } from 'restify-errors'
 import bcrypt from 'bcrypt-nodejs'
+import { format } from '../utils'
 import UserModel from '../models/UserModel'
 
 export default {
-  create: (req, res, next) => {
+  create: async (req, res, next) => {
     const { body } = req
 
     const userProps = {
@@ -28,41 +29,47 @@ export default {
 
     User.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
 
-    User.save()
-      .then(user => {
-        res.json({
-          _id: user._id,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          message: 'New user registered successfully'
-        })
-      })
-      .catch(error => {
-        next(
-          new BadRequestError({
-            cause: error,
-          }, 'User not registered')
-        )
-      })
+    try {
+      const data = await User.save()
+
+      res.json(format({ entity: 'user', omit: ['password'], data, req, res }))
+
+    } catch (err) {
+      next(
+        new BadRequestError({
+          cause: err,
+        }, 'User not registered')
+      )
+    }
   },
 
-  get: (req, res, next) => {
-    const _id = req.params.id
+  get: async (req, res, next) => {
+    try {
+      const data = await UserModel.findById(req.params.id)
 
-    UserModel.findById({ _id })
-      .then(user => {
-        res.json(user)
-      })
-      .catch(next)
+      res.json(format({ entity: 'user', data, req, res }))
+    } catch (err) {
+      next(err)
+    }
   },
 
-  find: (req, res, next) => {
-    UserModel.find({})
-      .then(users => {
-        res.json(users)
-      })
-      .catch(next)
+  find: async (req, res, next) => {
+    const query = req.body
+
+    if (!query) {
+      next(
+        new BadRequestError('Missing')
+      )
+      return
+    }
+
+    try {
+      const data = await UserModel.find(query)
+
+      res.json(format({ entity: 'user', data, req, res }))
+    } catch (err) {
+      next(err)
+    }
   },
 
   patch: () => {},

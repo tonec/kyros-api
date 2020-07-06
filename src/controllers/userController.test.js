@@ -2,12 +2,27 @@ import supertest from 'supertest'
 import mongoose from 'mongoose'
 import app from '../app'
 import { path } from '../utils'
+import cookie from '../test/test-cookie'
 
 const request = supertest(app)
 
+const userOneProps = {
+  firstName: 'Joe',
+  lastName: 'Bloggs',
+  email: 'joe-bloggs@example.com',
+  password: '1234567890'
+}
+
+const userTwoProps = {
+  firstName: 'Jill',
+  lastName: 'Bloggs',
+  email: 'jill-bloggs@example.com',
+  password: '1234567890'
+}
+
 const User = mongoose.model('User')
 
-describe('ROUTE: /user', () => {
+describe('POST: /user', () => {
   it('A POST with missing first name should be a bad request', async done => {
     request.post(path('/user'))
       .send({
@@ -92,7 +107,7 @@ describe('ROUTE: /user', () => {
       })
   })
 
-  it('A POST should register a new user and return new name and email but not the password', done => {
+  it('A POST should create a new user and return new name and email but not the password', done => {
     User.countDocuments().then(count => {
       request.post(path('/user'))
         .send({
@@ -116,17 +131,19 @@ describe('ROUTE: /user', () => {
 
           const user = await User.findOne({ email: 'joe-bloggs@example.com' })
 
-          expect(user._id).toBeTruthy()
+          const { data: { entities } } = res.body
+
+          expect(user.id).toBeTruthy()
           expect(user.firstName).toBe('Joe')
           expect(user.lastName).toBe('Bloggs')
           expect(user.email).toBe('joe-bloggs@example.com')
           expect(user.password).toBeTruthy()
           expect(user.password).not.toBe('1234567890')
 
-          expect(res.body.firstName).toBe('Joe')
-          expect(res.body.lastName).toBe('Bloggs')
-          expect(res.body.email).toBe('joe-bloggs@example.com')
-          expect(res.body.password).toBe(undefined)
+          expect(entities[0].firstName).toBe('Joe')
+          expect(entities[0].lastName).toBe('Bloggs')
+          expect(entities[0].email).toBe('joe-bloggs@example.com')
+          expect(entities[0].password).toBe(undefined)
 
           done()
         })
@@ -134,54 +151,73 @@ describe('ROUTE: /user', () => {
   })
 })
 
-// import request from 'supertest'
-// import { expect } from 'chai'
-// import mongoose from 'mongoose'
-// import config from '../../../config'
-// import api from '../../'
-// import cookie from '../test-cookie'
+describe('GET: /user/:id', () => {
+  let id
 
-// const User = mongoose.model('User')
-// const path = config.basePath
+  beforeEach(async done => {
+    const result = await new User(userOneProps).save()
+    id = `${result._id}`
+    done()
+  })
 
-// const userOneProps = {
-//   name: 'Joe Bloggs',
-//   email: 'joe@example.com',
-//   password: '1234'
-// }
+  it('A GET to /user/:id should require authorization', done => {
+    request.get(path(`/user/${id}`))
+      .expect('Content-type', /json/)
+      .expect(401)
+      .end(err => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+        done()
+      })
+  })
 
-// const userTwoProps = {
-//   name: 'Jill Bloggs',
-//   email: 'jill@example.com',
-//   password: '1234'
-// }
+  it('should return the user with that id', async done => {
+    request.get(path(`/user/${id}`))
+      .expect('Content-type', /json/)
+      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
+      .end((err, res) => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
 
-// describe('ROUTE: /users', () => {
-//   let userOne
-//   let userTwo
+        const { data: { entities } } = res.body
 
-//   beforeEach(done => {
-//     userOne = new User(userOneProps)
-//     userTwo = new User(userTwoProps)
+        expect(res.status).toBe(200)
+        expect(entities[0].id).toBe(id)
+        expect(entities[0].firstName).toBe('Joe')
+        expect(entities[0].lastName).toBe('Bloggs')
+        expect(entities[0].email).toBe('joe-bloggs@example.com')
 
-//     Promise.all([userOne.save(), userTwo.save()]).then(() => done())
-//   })
+        done()
+      })
+  })
+})
 
-//   it('A GET to /users should require authorization', done => {
-//     request(api)
-//       .get(path('/users'))
-//       .expect(401)
-//       .end(err => {
-//         if (err) {
-//           return done(new Error(`Supertest has encountered an error: ${err}`))
-//         }
-//         done()
-//       })
-//   })
+describe('GET: /user', () => {
+  let userOne
+  let userTwo
 
-//   it('A GET to /users should return a list of users', done => {
-//     request(api)
-//       .get(path('/users'))
+  beforeEach(done => {
+    userOne = new User(userOneProps)
+    userTwo = new User(userTwoProps)
+
+    Promise.all([userOne.save(), userTwo.save()]).then(() => done())
+  })
+
+  it('A GET to /user should require authorization', done => {
+    request.get(path('/user'))
+      .expect(401)
+      .end(err => {
+        if (err) {
+          return done(new Error(`Supertest has encountered an error: ${err}`))
+        }
+        done()
+      })
+  })
+
+//   it('A GET to /user should return a list of users', done => {
+//     request.get(path('/user'))
 //       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
 //       .expect('Content-Type', /json/)
 //       .expect(200)
@@ -189,7 +225,7 @@ describe('ROUTE: /user', () => {
 //         if (err) {
 //           return done(new Error(`Supertest has encountered an error: ${err}`))
 //         }
-//         expect(res.body.length).to.equal(2)
+//         expect(res.body.length).toBe(2)
 //         expect(
 //           res.body.filter(user => user.name === 'Joe Bloggs').length
 //         ).to.equal(1)
@@ -199,6 +235,7 @@ describe('ROUTE: /user', () => {
 //         done()
 //       })
 //   })
+})
 
 //   it('A GET to /users/:id should require authorization', done => {
 //     request(api)
