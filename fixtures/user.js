@@ -1,5 +1,5 @@
 import faker from 'faker'
-import User from '../models/UserModel'
+import User from '../src/models/UserModel'
 
 export default async () => {
   for (let i = 0; i < 100; i++) {

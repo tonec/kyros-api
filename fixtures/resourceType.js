@@ -1,4 +1,4 @@
-import ResourceType from '../models/ResourceTypeModel'
+import ResourceType from '../src/models/ResourceTypeModel'
 
 export default () => {
   const exampleTypes = [

@@ -1,7 +1,7 @@
 import 'babel-polyfill'
 import mongoose from 'mongoose'
 import request from 'supertest'
-import { path } from '../utils'
+import { path } from '../src/utils'
 
 beforeAll(async done => {
   const {

@@ -1,5 +1,5 @@
 import faker from 'faker'
-import Resource from '../models/ResourceModel'
+import Resource from '../src/models/ResourceModel'
 
 export default () => {
   const exampleTypes = {

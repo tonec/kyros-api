@@ -2,17 +2,18 @@ import supertest from 'supertest'
 import mongoose from 'mongoose'
 import app from '../app'
 import { path } from '../utils'
-import cookie from '../test/test-cookie'
+import cookie from '../../test/test-cookie'
 
 const request = supertest(app)
 
-const ResourceType = mongoose.model('ResourceType')
+const Resource = mongoose.model('Resource')
 
-describe('POST: /resourcetype', () => {
+describe('POST: /resource', () => {
   it('should require authorization', done => {
-    request.get(path('/resourcetype'))
+    request.get(path('/resource'))
       .send({
-        name: 'Test ResourceType'
+        name: 'Test Resource',
+        description: 'Test description'
       })
       .expect('Content-type', /json/)
       .expect(401)
@@ -25,7 +26,7 @@ describe('POST: /resourcetype', () => {
   })
 
   it('A POST with missing name should be a bad request', async done => {
-    request.post(path('/resourcetype'))
+    request.post(path('/resource'))
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
       .end((err, res) => {
@@ -35,17 +36,17 @@ describe('POST: /resourcetype', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('Resource type not created')
+        expect(res.body.message).toBe('Resource not created')
 
         done()
       })
   })
 
-  it('A POST should create a new resource type', done => {
-    ResourceType.countDocuments().then(count => {
-      request.post(path('/resourcetype'))
+  it('A POST should create a new resource', done => {
+    Resource.countDocuments().then(count => {
+      request.post(path('/resource'))
         .send({
-          name: 'Test ResourceType',
+          name: 'Test Resource',
         })
         .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
         .expect('Content-type', /json/)
@@ -55,23 +56,23 @@ describe('POST: /resourcetype', () => {
             return done(new Error(`Supertest has encountered an error: ${err}`))
           }
 
-          ResourceType.countDocuments()
+          Resource.countDocuments()
             .then(newCount => {
               expect(newCount).toBe(count + 1)
             })
             .catch(done)
 
-          const resourcetype = await ResourceType.findOne({ name: 'Test ResourceType' })
+          const resource = await Resource.findOne({ name: 'Test Resource' })
 
-          expect(resourcetype.id).toBeTruthy()
-          expect(resourcetype.name).toBe('Test ResourceType')
+          expect(resource.id).toBeTruthy()
+          expect(resource.name).toBe('Test Resource')
 
           const { action, entity, data } = res.body
 
           expect(action).toBe('store')
-          expect(entity).toBe('resourceType')
+          expect(entity).toBe('resource')
 
-          expect(data.entities[0].name).toBe('Test ResourceType')
+          expect(data.entities[0].name).toBe('Test Resource')
 
           done()
         })
@@ -79,17 +80,17 @@ describe('POST: /resourcetype', () => {
   })
 })
 
-describe('GET: /resourcetype/:id', () => {
+describe('GET: /resource/:id', () => {
   let id
 
   beforeEach(async done => {
-    const result = await new ResourceType({ name: 'Test ResourceType' }).save()
+    const result = await new Resource({ name: 'Test Resource' }).save()
     id = `${result._id}`
     done()
   })
 
-  it('A GET to /resourcetype/:id should require authorization', done => {
-    request.get(path(`/resourcetype/${id}`))
+  it('A GET to /resource/:id should require authorization', done => {
+    request.get(path(`/resource/${id}`))
       .expect('Content-type', /json/)
       .expect(401)
       .end(err => {
@@ -100,8 +101,8 @@ describe('GET: /resourcetype/:id', () => {
       })
   })
 
-  it('should return the resourcetype with that id', async done => {
-    request.get(path(`/resourcetype/${id}`))
+  it('should return the resource with that id', async done => {
+    request.get(path(`/resource/${id}`))
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
       .expect(200)
@@ -113,29 +114,29 @@ describe('GET: /resourcetype/:id', () => {
         const { action, entity, data } = res.body
 
         expect(action).toBe('store')
-        expect(entity).toBe('resourceType')
+        expect(entity).toBe('resource')
 
         expect(data.entities[0].id).toBe(id)
-        expect(data.entities[0].name).toBe('Test ResourceType')
+        expect(data.entities[0].name).toBe('Test Resource')
 
         done()
       })
   })
 })
 
-describe('GET: /resourcetype', () => {
-  let resourceTypeOne
-  let resourceTypeTwo
+describe('GET: /resource', () => {
+  let resourceOne
+  let resourceTwo
 
   beforeEach(done => {
-    resourceTypeOne = new ResourceType({ name: 'Test ResourceType 1' })
-    resourceTypeTwo = new ResourceType({ name: 'Test ResourceType 2' })
+    resourceOne = new Resource({ name: 'Test Resource 1' })
+    resourceTwo = new Resource({ name: 'Test Resource 2' })
 
-    Promise.all([resourceTypeOne.save(), resourceTypeTwo.save()]).then(() => done())
+    Promise.all([resourceOne.save(), resourceTwo.save()]).then(() => done())
   })
 
-  it('A GET to /resourcetype should require authorization', done => {
-    request.get(path('/resourcetype'))
+  it('A GET to /resource should require authorization', done => {
+    request.get(path('/resource'))
       .expect(401)
       .end(err => {
         if (err) {
@@ -145,8 +146,8 @@ describe('GET: /resourcetype', () => {
       })
   })
 
-  it('A GET to /resourcetype should return a list of resourcetypes', done => {
-    request.get(path('/resourcetype'))
+  it('A GET to /resource should return a list of resources', done => {
+    request.get(path('/resource'))
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-Type', /json/)
       .expect(200)
@@ -158,7 +159,7 @@ describe('GET: /resourcetype', () => {
         const { action, entity, data } = res.body
 
         expect(action).toBe('store')
-        expect(entity).toBe('resourceType')
+        expect(entity).toBe('resource')
         expect(data.entities.length).toBe(2)
 
         done()
@@ -166,21 +167,21 @@ describe('GET: /resourcetype', () => {
   })
 })
 
-describe('PATCH: /resourcetype/:id', () => {
-  let resourceTypeOne
-  let resourceTypeTwo
+describe('PATCH: /resource/:id', () => {
+  let resourceOne
+  let resourceTwo
 
   beforeEach(done => {
-    resourceTypeOne = new ResourceType({ name: 'Test ResourceType 1' })
-    resourceTypeTwo = new ResourceType({ name: 'Test ResourceType 2' })
+    resourceOne = new Resource({ name: 'Test Resource 1' })
+    resourceTwo = new Resource({ name: 'Test Resource 2' })
 
-    Promise.all([resourceTypeOne.save(), resourceTypeTwo.save()]).then(() => done())
+    Promise.all([resourceOne.save(), resourceTwo.save()]).then(() => done())
   })
 
   it('should require authorization', done => {
-    request.get(path('/resourcetype'))
+    request.get(path('/resource'))
       .send({
-        name: 'Test ResourceType',
+        name: 'Test Resource',
       })
       .expect('Content-type', /json/)
       .expect(401)
@@ -192,9 +193,9 @@ describe('PATCH: /resourcetype/:id', () => {
       })
   })
 
-  it('A PATCH should update the resourcetype', done => {
-    request.patch(path(`/resourcetype/${resourceTypeOne._id}`))
-      .send({ name: 'New ResourceType Name' })
+  it('A PATCH should update the resource', done => {
+    request.patch(path(`/resource/${resourceOne._id}`))
+      .send({ name: 'New Resource Name' })
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
       .expect(200)
@@ -203,16 +204,16 @@ describe('PATCH: /resourcetype/:id', () => {
           return done(new Error(`Supertest has encountered an error: ${err}`))
         }
 
-        const resourceType = await ResourceType.findById(resourceTypeOne._id)
+        const resource = await Resource.findById(resourceOne._id)
 
-        expect(resourceType.name).toBe('New ResourceType Name')
+        expect(resource.name).toBe('New Resource Name')
 
         const { action, entity, data } = res.body
 
         expect(action).toBe('store')
-        expect(entity).toBe('resourceType')
+        expect(entity).toBe('resource')
 
-        expect(data.entities[0].name).toBe('New ResourceType Name')
+        expect(data.entities[0].name).toBe('New Resource Name')
 
         done()
       })

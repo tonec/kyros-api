@@ -1,7 +1,7 @@
 import supertest from 'supertest'
 import app from '../app'
 import { path } from '../utils'
-import cookie from '../test/test-cookie'
+import cookie from '../../test/test-cookie'
 
 const request = supertest(app)
 

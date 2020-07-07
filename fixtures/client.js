@@ -1,5 +1,5 @@
 import faker from 'faker'
-import Client from '../models/ClientModel'
+import Client from '../src/models/ClientModel'
 
 export default async () => {
   for (let i = 0; i < 10; i++) {
