@@ -2,46 +2,43 @@ import { Schema, model } from 'mongoose'
 import Joi from '@hapi/joi'
 
 const BookingSchema = Schema({
-  client: {
-    type: String,
+  startsAt: {
+    type: Date,
     required: true
   },
-  host: {
-
-  },
-  resource: {
-
-  },
-  resourceType: {
-
-  },
-  bookedBy: {
-
-  },
-  startsAt: {
-
-  },
-  endsAt: {
-
-  },
   duration: {
-
-  },
-  cancelled: {
-
-  },
-  cancelledBy: {
-
+    type: Number,
+    required: true
   },
   notes: {
-
+    type: String,
+    trim: true
+  },
+  host: {
+    type: Schema.Types.objectId,
+    ref: 'User',
+    required: true
+  },
+  service: {
+    type: Schema.Types.objectId,
+    ref: 'Service',
+    required: true
+  },
+  client: {
+    type: Schema.Types.objectId,
+    ref: 'Client',
+    required: true
   }
 }, { timestamps: true })
 
 BookingSchema.methods.joiValidate = obj => {
   return Joi.object({
-    name: Joi.string().required(),
-    logo: Joi.string()
+    startsAt: Joi.date().required(),
+    duration: Joi.number().required(),
+    notes: Joi.string(),
+    host: Joi.string().required(),
+    service: Joi.string().required(),
+    client: Joi.string().required()
   }).validate(obj)
 }
 
