@@ -1,9 +1,9 @@
-import mongoose from 'mongoose'
+import { Schema, model } from 'mongoose'
 import Joi from '@hapi/joi'
 import bcrypt from 'bcrypt-nodejs'
 import beautifyUnique from 'mongoose-beautiful-unique-validation'
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   firstName: {
     type: String,
     trim: true,
@@ -67,4 +67,4 @@ UserSchema.methods.toJSON = function () {
   return obj
 }
 
-export default mongoose.model('User', UserSchema)
+export default model('User', UserSchema)

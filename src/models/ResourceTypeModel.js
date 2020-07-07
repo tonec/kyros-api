@@ -1,7 +1,7 @@
-import mongoose from 'mongoose'
+import { Schema, model } from 'mongoose'
 import Joi from '@hapi/joi'
 
-const ResourceTypeSchema = mongoose.Schema({
+const ResourceTypeSchema = Schema({
   name: {
     type: String,
     trim: true,
@@ -25,4 +25,4 @@ ResourceTypeSchema.methods.joiValidate = obj => {
   }).validate(obj)
 }
 
-export default mongoose.model('ResourceType', ResourceTypeSchema)
+export default model('ResourceType', ResourceTypeSchema)

@@ -1,7 +1,7 @@
-import mongoose from 'mongoose'
+import { Schema, model } from 'mongoose'
 import Joi from '@hapi/joi'
 
-const BookingSchema = mongoose.Schema({
+const BookingSchema = Schema({
   client: {
     type: String,
     required: true
@@ -55,4 +55,4 @@ BookingSchema.methods.joiValidate = obj => {
   }).validate(obj)
 }
 
-export default mongoose.model('Booking', BookingSchema)
+export default model('Booking', BookingSchema)
