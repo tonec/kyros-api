@@ -42,16 +42,8 @@ const UserSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Client',
     required: true
-  },
-  created: {
-    type: Date,
-    default: Date.now
-  },
-  modified: {
-    type: Date,
-    default: Date.now
   }
-})
+}, { timestamps: true })
 
 UserSchema.methods.joiValidate = obj => {
   return Joi.object({
@@ -61,9 +53,7 @@ UserSchema.methods.joiValidate = obj => {
     password: Joi.string().min(8).max(30).regex(/[a-zA-Z0-9]{3,30}/).required(),
     super: Joi.boolean(),
     role: Joi.string().required(),
-    client: Joi.string().required(),
-    created: Joi.date(),
-    modified: Joi.date()
+    client: Joi.string().required()
   }).validate(obj)
 }
 

@@ -13,24 +13,14 @@ const ServiceSchema = Schema({
   client: {
     type: String,
     trim: true,
-  },
-  created: {
-    type: Date,
-    default: Date.now
-  },
-  modified: {
-    type: Date,
-    default: Date.now
   }
-})
+}, { timestamps: true })
 
 ServiceSchema.methods.joiValidate = obj => {
   return Joi.object({
     name: Joi.string().required(),
     description: Joi.string(),
-    client: Joi.string().required(),
-    created: Joi.date(),
-    modified: Joi.date()
+    client: Joi.string().required()
   }).validate(obj)
 }
 

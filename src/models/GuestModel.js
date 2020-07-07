@@ -20,25 +20,15 @@ const ClientSchema = Schema({
   phone: {
     type: Number,
     trim: true
-  },
-  created: {
-    type: Date,
-    default: Date.now
-  },
-  modified: {
-    type: Date,
-    default: Date.now
   }
-})
+}, { timestamps: true })
 
 ClientSchema.methods.joiValidate = obj => {
   return Joi.object({
     firstName: Joi.string().required(),
     lastName: Joi.string().required(),
     email: Joi.string().email().required(),
-    phone: Joi.number(),
-    created: Joi.date(),
-    modified: Joi.date()
+    phone: Joi.number()
   }).validate(obj)
 }
 

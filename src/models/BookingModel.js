@@ -35,23 +35,13 @@ const BookingSchema = Schema({
   },
   notes: {
 
-  },
-  created: {
-    type: Date,
-    default: Date.now
-  },
-  modified: {
-    type: Date,
-    default: Date.now
   }
-})
+}, { timestamps: true })
 
 BookingSchema.methods.joiValidate = obj => {
   return Joi.object({
     name: Joi.string().required(),
-    logo: Joi.string(),
-    created: Joi.date(),
-    modified: Joi.date()
+    logo: Joi.string()
   }).validate(obj)
 }
 
