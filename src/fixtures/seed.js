@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import client from './client'
+import resource from './resource'
+import resourceType from './resourceType'
 import user from './user'
 
 require('dotenv').config()
@@ -25,6 +27,8 @@ mongoose.connect(url, options)
     console.log('MongoDB is connected')
 
     client()
+    resourceType()
+    resource()
     user()
   })
   .catch((err) => {

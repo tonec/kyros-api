@@ -10,12 +10,12 @@ const ResourceSchema = Schema({
   description: {
     type: String
   },
+  resourceType: {
+    type: String,
+  },
   client: {
     type: String,
     trim: true,
-  },
-  resourceType: {
-    type: String,
   },
   created: {
     type: Date,
