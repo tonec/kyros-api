@@ -36,7 +36,7 @@ describe('POST: /service', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('Service not created')
+        expect(res.body.message).toBe('Validation failed creating service')
 
         done()
       })

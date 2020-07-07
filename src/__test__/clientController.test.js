@@ -35,7 +35,7 @@ describe('POST: /client', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('Client not created')
+        expect(res.body.message).toBe('Validation failed creating client')
 
         done()
       })

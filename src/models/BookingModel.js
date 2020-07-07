@@ -15,17 +15,17 @@ const BookingSchema = Schema({
     trim: true
   },
   host: {
-    type: Schema.Types.objectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
   service: {
-    type: Schema.Types.objectId,
+    type: Schema.Types.ObjectId,
     ref: 'Service',
     required: true
   },
   client: {
-    type: Schema.Types.objectId,
+    type: Schema.Types.ObjectId,
     ref: 'Client',
     required: true
   }

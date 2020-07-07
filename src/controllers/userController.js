@@ -5,13 +5,9 @@ import User from '../models/UserModel'
 
 export default {
   create: async (req, res, next) => {
-    const { body } = req
-
-    const userProps = req.body
-
-    const user = new User(userProps)
-
-    const validation = user.joiValidate(userProps)
+    const body = req.body || {}
+    const user = new User(body)
+    const validation = user.joiValidate(body)
 
     if (validation.error) {
       next(
@@ -22,7 +18,7 @@ export default {
       return
     }
 
-    user.password = bcrypt.hashSync(body.password, bcrypt.genSaltSync(10))
+    user.password = bcrypt.hashSync(req.body.password, bcrypt.genSaltSync(10))
 
     try {
       const data = await user.save()
@@ -30,7 +26,6 @@ export default {
       res.json(format({ entity: 'user', omit: ['password'], data, req, res }))
 
     } catch (err) {
-      console.log('errrrr', err)
       next(
         new BadRequestError({
           cause: err,

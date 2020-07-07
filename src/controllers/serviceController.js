@@ -4,8 +4,21 @@ import Service from '../models/ServiceModel'
 
 export default {
   create: async (req, res, next) => {
+    const body = req.body || {}
+    const service = new Service(body)
+    const validation = service.joiValidate(body)
+
+    if (validation.error) {
+      next(
+        new BadRequestError({
+          cause: validation.error,
+        }, 'Validation failed creating service')
+      )
+      return
+    }
+
     try {
-      const data = await Service.create(req.body)
+      const data = await service.save()
 
       res.json(format({ entity: 'service', data, req, res }))
 

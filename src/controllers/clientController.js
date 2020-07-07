@@ -4,8 +4,21 @@ import Client from '../models/ClientModel'
 
 export default {
   create: async (req, res, next) => {
+    const body = req.body || {}
+    const client = new Client(body)
+    const validation = client.joiValidate(body)
+
+    if (validation.error) {
+      next(
+        new BadRequestError({
+          cause: validation.error,
+        }, 'Validation failed creating client')
+      )
+      return
+    }
+
     try {
-      const data = await Client.create(req.body)
+      const data = await client.save()
 
       res.json(format({ entity: 'client', data, req, res }))
 
