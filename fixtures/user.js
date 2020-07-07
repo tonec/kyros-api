@@ -13,6 +13,7 @@ export default async () => {
       email: faker.internet.email(),
       password: 'password',
       super: faker.random.boolean(),
+      role: faker.helpers.randomize(['admin', 'reception', 'host']),
       client: randomClient._id
     })
 

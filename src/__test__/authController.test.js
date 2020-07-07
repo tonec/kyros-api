@@ -1,3 +1,4 @@
+import mongoose from 'mongoose'
 import supertest from 'supertest'
 import app from '../app'
 import { path } from '../utils'
@@ -5,14 +6,33 @@ import cookie from '../../test/test-cookie'
 
 const request = supertest(app)
 
+const Client = mongoose.model('Client')
+const User = mongoose.model('User')
+
+const clientProps = {
+  name: 'Test client'
+}
+
+const userProps = {
+  firstName: 'Joe',
+  lastName: 'Bloggs',
+  email: 'joe-bloggs@example.com',
+  password: '1234567890',
+  role: 'host'
+}
+
 describe('ROUTE: /auth/login', () => {
-  beforeEach(done => {
+  beforeEach(async done => {
+    const client = await new Client(clientProps)
+
     request.post(path('/user'))
       .send({
         firstName: 'Joe',
         lastName: 'Bloggs',
         email: 'joe-bloggs@example.com',
-        password: '1234567890'
+        password: '1234567890',
+        client: client._id,
+        role: 'host'
       })
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)

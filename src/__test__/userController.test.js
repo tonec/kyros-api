@@ -4,32 +4,48 @@ import app from '../app'
 import { path } from '../utils'
 import cookie from '../../test/test-cookie'
 
+const Client = mongoose.model('Client')
+const User = mongoose.model('User')
+
 const request = supertest(app)
+
+const clientProps = {
+  name: 'Test client'
+}
 
 const userOneProps = {
   firstName: 'Joe',
   lastName: 'Bloggs',
   email: 'joe-bloggs@example.com',
-  password: '1234567890'
+  password: '1234567890',
+  role: 'host'
 }
 
 const userTwoProps = {
   firstName: 'Jill',
   lastName: 'Bloggs',
   email: 'jill-bloggs@example.com',
-  password: '1234567890'
+  password: '1234567890',
+  role: 'host'
 }
 
-const User = mongoose.model('User')
-
 describe('POST: /user', () => {
+  let client
+
+  beforeEach(done => {
+    client = new Client(clientProps)
+    client.save().then(() => done())
+  })
+
   it('should require authorization', done => {
     request.get(path('/user'))
       .send({
         firstName: 'Joe',
         lastName: 'Bloggs',
         email: 'joe-bloggs@example.com',
-        password: '1234567890'
+        password: '1234567890',
+        client: client._id,
+        role: 'host'
       })
       .expect('Content-type', /json/)
       .expect(401)
@@ -46,7 +62,9 @@ describe('POST: /user', () => {
       .send({
         lastName: 'Bloggs',
         email: 'joe-bloggs@example.com',
-        password: '1234567890'
+        password: '1234567890',
+        client: client._id,
+        role: 'host'
       })
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
@@ -57,7 +75,7 @@ describe('POST: /user', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('User not registered')
+        expect(res.body.message).toBe('Validation failed creating user')
 
         done()
       })
@@ -68,7 +86,9 @@ describe('POST: /user', () => {
       .send({
         firstName: 'Joe',
         email: 'joe-bloggs@example.com',
-        password: '1234567890'
+        password: '1234567890',
+        client: client._id,
+        role: 'host'
       })
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
@@ -79,7 +99,7 @@ describe('POST: /user', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('User not registered')
+        expect(res.body.message).toBe('Validation failed creating user')
 
         done()
       })
@@ -90,7 +110,9 @@ describe('POST: /user', () => {
       .send({
         firstName: 'Joe',
         lastName: 'Bloggs',
-        password: '1234'
+        password: '1234',
+        client: client._id,
+        role: 'host'
       })
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
@@ -101,7 +123,7 @@ describe('POST: /user', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('User not registered')
+        expect(res.body.message).toBe('Validation failed creating user')
 
         done()
       })
@@ -112,7 +134,9 @@ describe('POST: /user', () => {
       .send({
         firstName: 'Joe',
         lastName: 'Bloggs',
-        email: 'joe-bloggs@example.com'
+        email: 'joe-bloggs@example.com',
+        client: client._id,
+        role: 'host'
       })
       .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
       .expect('Content-type', /json/)
@@ -123,7 +147,7 @@ describe('POST: /user', () => {
 
         expect(res.status).toBe(400)
         expect(res.body.code).toBe('BadRequest')
-        expect(res.body.message).toBe('User not registered')
+        expect(res.body.message).toBe('Validation failed creating user')
 
         done()
       })
@@ -136,7 +160,9 @@ describe('POST: /user', () => {
           firstName: 'Joe',
           lastName: 'Bloggs',
           email: 'joe-bloggs@example.com',
-          password: '1234567890'
+          password: '1234567890',
+          client: client._id,
+          role: 'host'
         })
         .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
         .expect('Content-type', /json/)
@@ -181,7 +207,8 @@ describe('GET: /user/:id', () => {
   let id
 
   beforeEach(async done => {
-    const result = await new User(userOneProps).save()
+    const client = await new Client(clientProps)
+    const result = await new User({ ...userOneProps, client: client._id }).save()
     id = `${result._id}`
     done()
   })
@@ -228,8 +255,10 @@ describe('GET: /user', () => {
   let userTwo
 
   beforeEach(done => {
-    userOne = new User(userOneProps)
-    userTwo = new User(userTwoProps)
+    const client = new Client(clientProps)
+
+    userOne = new User({ ...userOneProps, client: client._id })
+    userTwo = new User({ ...userTwoProps, client: client._id })
 
     Promise.all([userOne.save(), userTwo.save()]).then(() => done())
   })
@@ -271,8 +300,10 @@ describe('PATCH: /user/:id', () => {
   let userTwo
 
   beforeEach(done => {
-    userOne = new User(userOneProps)
-    userTwo = new User(userTwoProps)
+    const client = new Client(clientProps)
+
+    userOne = new User({ ...userOneProps, client: client._id })
+    userTwo = new User({ ...userTwoProps, client: client._id })
 
     Promise.all([userOne.save(), userTwo.save()]).then(() => done())
   })

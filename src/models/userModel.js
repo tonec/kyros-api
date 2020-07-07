@@ -33,9 +33,15 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+  role: {
+    type: String,
+    enum: ['admin', 'reception', 'host'],
+    required: true
+  },
   client: {
     type: Schema.Types.ObjectId,
-    ref: 'Client'
+    ref: 'Client',
+    required: true
   },
   created: {
     type: Date,
@@ -54,6 +60,8 @@ UserSchema.methods.joiValidate = obj => {
     email: Joi.string().email().required(),
     password: Joi.string().min(8).max(30).regex(/[a-zA-Z0-9]{3,30}/).required(),
     super: Joi.boolean(),
+    role: Joi.string().required(),
+    client: Joi.string().required(),
     created: Joi.date(),
     modified: Joi.date()
   }).validate(obj)

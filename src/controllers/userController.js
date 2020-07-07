@@ -17,7 +17,7 @@ export default {
       next(
         new BadRequestError({
           cause: validation.error,
-        }, 'User not registered')
+        }, 'Validation failed creating user')
       )
       return
     }
@@ -30,10 +30,11 @@ export default {
       res.json(format({ entity: 'user', omit: ['password'], data, req, res }))
 
     } catch (err) {
+      console.log('errrrr', err)
       next(
         new BadRequestError({
           cause: err,
-        }, 'User not registered')
+        }, 'User not created')
       )
     }
   },

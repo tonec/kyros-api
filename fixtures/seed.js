@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 import client from './client'
-import resource from './resource'
-import resourceType from './resourceType'
+import service from './service'
 import user from './user'
 
 require('dotenv').config()
@@ -27,8 +26,7 @@ mongoose.connect(url, options)
     console.log('MongoDB is connected')
 
     await client()
-    await resourceType()
-    await resource()
+    await service()
     await user()
 
     console.log('done!')
