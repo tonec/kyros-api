@@ -15,4 +15,6 @@ export default async () => {
         console.log(err)
       })
   }
+
+  console.log('Clients seeded...')
 }

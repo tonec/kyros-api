@@ -23,13 +23,15 @@ const options = {
 const url = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`
 
 mongoose.connect(url, options)
-  .then(() => {
+  .then(async () => {
     console.log('MongoDB is connected')
 
-    client()
-    resourceType()
-    resource()
-    user()
+    await client()
+    await resourceType()
+    await resource()
+    await user()
+
+    console.log('done!')
   })
   .catch((err) => {
     console.log(err)

@@ -1,6 +1,8 @@
 import { Schema, model } from 'mongoose'
 import Joi from '@hapi/joi'
 
+import util from 'util'
+
 const ClientSchema = Schema({
   name: {
     type: String,
@@ -27,6 +29,12 @@ ClientSchema.methods.joiValidate = obj => {
     created: Joi.date(),
     modified: Joi.date()
   }).validate(obj)
+}
+
+ClientSchema.statics.random = async function (cb) {
+  const count = await this.countDocuments()
+  const rand = Math.floor(Math.random() * count)
+  return this.findOne().skip(rand)
 }
 
 export default model('Client', ClientSchema)

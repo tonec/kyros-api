@@ -37,4 +37,6 @@ export default () => {
         })
     })
   })
+
+  console.log('Resources seeded...')
 }

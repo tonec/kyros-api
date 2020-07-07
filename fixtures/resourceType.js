@@ -20,4 +20,6 @@ export default () => {
         console.log(err)
       })
   })
+
+  console.log('ResourceTypes seeded...')
 }

@@ -33,6 +33,10 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false
   },
+  client: {
+    type: Schema.Types.ObjectId,
+    ref: 'Client'
+  },
   created: {
     type: Date,
     default: Date.now

@@ -12,7 +12,7 @@
     "lint": "eslint -c .eslintrc src",
     "test": "jest --detectOpenHandles --forceExit",
     "test:watch": "jest --watch --runInBand --detectOpenHandles",
-    "seed": "babel-node ./src/fixtures/seed.js"
+    "seed": "babel-node ./fixtures/seed.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.4",
