@@ -1,11 +1,18 @@
 import { Schema, model } from 'mongoose'
 import Joi from '@hapi/joi'
 
-const ResourceTypeSchema = Schema({
+const ServiceSchema = Schema({
   name: {
     type: String,
     trim: true,
     required: true
+  },
+  description: {
+    type: String
+  },
+  client: {
+    type: String,
+    trim: true,
   },
   created: {
     type: Date,
@@ -17,12 +24,14 @@ const ResourceTypeSchema = Schema({
   }
 })
 
-ResourceTypeSchema.methods.joiValidate = obj => {
+ServiceSchema.methods.joiValidate = obj => {
   return Joi.object({
     name: Joi.string().required(),
+    description: Joi.string(),
+    client: Joi.string().required(),
     created: Joi.date(),
     modified: Joi.date()
   }).validate(obj)
 }
 
-export default model('ResourceType', ResourceTypeSchema)
+export default model('Service', ServiceSchema)
