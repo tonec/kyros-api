@@ -1,5 +1,6 @@
 import restify from 'restify'
 import mongoose from 'mongoose'
+import helmet from 'helmet'
 import im from 'is-master'
 import cookieParser from 'restify-cookies'
 import paginate from 'restify-paginate'
@@ -44,6 +45,8 @@ if (process.env.NODE_ENV !== 'test') {
 
   im.start()
 }
+
+app.use(helmet())
 
 app.use(cookieParser.parse)
 

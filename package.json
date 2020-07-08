@@ -36,6 +36,7 @@
     "@hapi/joi": "^17.1.1",
     "bcrypt-nodejs": "^0.0.3",
     "dotenv": "^8.2.0",
+    "helmet": "^3.23.3",
     "is-master": "^1.2.2",
     "jsonwebtoken": "^8.1.1",
     "lodash": "^4.17.15",
