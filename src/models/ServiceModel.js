@@ -11,8 +11,9 @@ const ServiceSchema = Schema({
     type: String
   },
   client: {
-    type: String,
-    trim: true,
+    type: Schema.Types.ObjectId,
+    ref: 'Client',
+    required: true
   }
 }, { timestamps: true })
 

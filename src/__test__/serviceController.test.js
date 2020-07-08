@@ -4,16 +4,29 @@ import app from '../app'
 import { path } from '../utils'
 import cookie from '../../test/test-cookie'
 
-const request = supertest(app)
-
+const Client = mongoose.model('Client')
 const Service = mongoose.model('Service')
 
+const request = supertest(app)
+
+const clientProps = {
+  name: 'Test client'
+}
+
 describe('POST: /service', () => {
+  let client
+
+  beforeEach(done => {
+    client = new Client(clientProps)
+    client.save().then(() => done())
+  })
+
   it('should require authorization', done => {
     request.get(path('/service'))
       .send({
         name: 'Test Service',
-        description: 'Test description'
+        description: 'Test description',
+        client: client._id
       })
       .expect('Content-type', /json/)
       .expect(401)
@@ -47,6 +60,8 @@ describe('POST: /service', () => {
       request.post(path('/service'))
         .send({
           name: 'Test Service',
+          description: 'Some description',
+          client: client._id
         })
         .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
         .expect('Content-type', /json/)
@@ -84,7 +99,8 @@ describe('GET: /service/:id', () => {
   let id
 
   beforeEach(async done => {
-    const result = await new Service({ name: 'Test Service' }).save()
+    const client = await new Client(clientProps)
+    const result = await new Service({ name: 'Test Service', client: client._id }).save()
     id = `${result._id}`
     done()
   })
@@ -128,9 +144,10 @@ describe('GET: /service', () => {
   let serviceOne
   let serviceTwo
 
-  beforeEach(done => {
-    serviceOne = new Service({ name: 'Test Service 1' })
-    serviceTwo = new Service({ name: 'Test Service 2' })
+  beforeEach(async done => {
+    const client = await new Client(clientProps)
+    serviceOne = new Service({ name: 'Test Service 1', client: client._id })
+    serviceTwo = new Service({ name: 'Test Service 2', client: client._id })
 
     Promise.all([serviceOne.save(), serviceTwo.save()]).then(() => done())
   })
@@ -171,9 +188,10 @@ describe('PATCH: /service/:id', () => {
   let serviceOne
   let serviceTwo
 
-  beforeEach(done => {
-    serviceOne = new Service({ name: 'Test Service 1' })
-    serviceTwo = new Service({ name: 'Test Service 2' })
+  beforeEach(async done => {
+    const client = await new Client(clientProps)
+    serviceOne = new Service({ name: 'Test Service 1', client: client._id })
+    serviceTwo = new Service({ name: 'Test Service 2', client: client._id })
 
     Promise.all([serviceOne.save(), serviceTwo.save()]).then(() => done())
   })
