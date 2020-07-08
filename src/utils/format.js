@@ -1,5 +1,3 @@
-import _get from 'lodash/get'
-import qs from 'qs'
 
 export default ({ action = 'store', omit = [], entity, data, req, res }) => {
   let response = {
@@ -28,14 +26,12 @@ export default ({ action = 'store', omit = [], entity, data, req, res }) => {
     return response
   }
 
-  const query = qs.parse(req.getQuery())
-  const paginated = res.paginate.getPaginatedResponse(data)
-  const parsed = JSON.parse(JSON.stringify(paginated))
+  const parsed = JSON.parse(JSON.stringify(data))
 
-  if (parsed.data.length > 0) {
+  if (parsed.length > 0) {
     response.meta.entityCount = data.length
 
-    response.data.entities = parsed.data.reduce((acc, item) => {
+    response.data.entities = parsed.reduce((acc, item) => {
       const itemObj = item
 
       itemObj.id = itemObj._id
@@ -52,8 +48,6 @@ export default ({ action = 'store', omit = [], entity, data, req, res }) => {
       return acc.concat(itemObj)
     }, [])
 
-    response.pages = parsed.pages
-    response.pages.perPage = _get(query, 'per_page')
   } else {
     response = null
   }

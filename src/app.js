@@ -3,7 +3,6 @@ import mongoose from 'mongoose'
 import helmet from 'helmet'
 import im from 'is-master'
 import cookieParser from 'restify-cookies'
-import paginate from 'restify-paginate'
 import routes from './routes'
 import tasks from './tasks'
 import { verifyToken } from './utils'
@@ -75,8 +74,6 @@ app.use(restify.plugins.acceptParser(app.acceptable))
 app.use(restify.plugins.queryParser({ mapParams: true }))
 
 app.use(restify.plugins.bodyParser({ mapParams: false }))
-
-app.use(paginate(app))
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
