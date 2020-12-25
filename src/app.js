@@ -3,13 +3,16 @@ import mongoose from 'mongoose'
 import helmet from 'helmet'
 import im from 'is-master'
 import cookieParser from 'restify-cookies'
+import corsMiddleware from 'restify-cors-middleware'
 import routes from './routes'
 import tasks from './tasks'
 import { verifyToken } from './utils'
 
 require('dotenv').config()
 
-process.on('unhandledRejection', error => console.error('unhandledRejection error: ', error))
+process.on('unhandledRejection', error =>
+  console.error('unhandledRejection error: ', error),
+)
 
 const app = restify.createServer()
 
@@ -21,22 +24,23 @@ if (process.env.NODE_ENV !== 'test') {
     MONGO_PASSWORD,
     MONGO_HOSTNAME,
     MONGO_PORT,
-    MONGO_DB
+    MONGO_DB,
   } = process.env
 
   const options = {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    connectTimeoutMS: 10000
+    connectTimeoutMS: 10000,
   }
 
   const url = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`
 
-  mongoose.connect(url, options)
+  mongoose
+    .connect(url, options)
     .then(() => {
       console.log('MongoDB is connected')
     })
-    .catch((err) => {
+    .catch(err => {
       console.log(err)
     })
 
@@ -44,6 +48,16 @@ if (process.env.NODE_ENV !== 'test') {
 
   im.start()
 }
+
+const cors = corsMiddleware({
+  origins: ['*'],
+  allowHeaders: ['Authorization'],
+  exposeHeaders: ['Authorization'],
+})
+
+app.pre(cors.preflight)
+
+app.use(cors.actual)
 
 app.use(helmet())
 
@@ -75,17 +89,11 @@ app.use(restify.plugins.queryParser({ mapParams: true }))
 
 app.use(restify.plugins.bodyParser({ mapParams: false }))
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*')
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With')
-  return next()
-})
-
 app.on('restifyError', (req, res, err, callback) => {
   err.toJSON = () => {
     return {
       ...err.body,
-      cause: err.jse_cause
+      cause: err.jse_cause,
     }
   }
   return callback()
