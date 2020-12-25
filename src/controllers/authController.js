@@ -21,7 +21,7 @@ export default {
 
         res.json({
           user: {
-            _id: user._id,
+            id: user._id,
             firstName: user.firstName,
             lastName: user.lastName,
           },
