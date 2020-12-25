@@ -8,7 +8,7 @@ if (port) {
       console.error(err)
     }
     console.info(`API is running on port ${port}`)
-    console.info(`Send requests to http://kyros-app.com:${port}`)
+    console.info(`Send requests to http://localhost:${port}`)
   })
 } else {
   console.error('No APIPORT environment variable has been specified')

@@ -1,5 +1,6 @@
 import faker from 'faker'
 import Service from '../src/models/ServiceModel'
+import Client from '../src/models/ClientModel'
 
 export default () => {
   const exampleTypes = [
@@ -8,14 +9,16 @@ export default () => {
     'Highlights',
     'Dye',
     'Perm',
-    'Hair straightening'
+    'Hair straightening',
   ]
 
   exampleTypes.forEach(async type => {
+    const randomClient = await Client.random()
+
     const service = new Service({
       name: type,
       description: faker.lorem.sentence(),
-      client: ''
+      client: randomClient._id,
     })
 
     await service

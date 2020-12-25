@@ -3,7 +3,6 @@ import Client from '../src/models/ClientModel'
 
 export default async () => {
   for (let i = 0; i < 10; i++) {
-
     const client = new Client({
       name: faker.company.companyName(),
     })

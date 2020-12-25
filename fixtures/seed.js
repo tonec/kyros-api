@@ -10,18 +10,19 @@ const {
   MONGO_PASSWORD,
   MONGO_HOSTNAME,
   MONGO_PORT,
-  MONGO_DB
+  MONGO_DB,
 } = process.env
 
 const options = {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  connectTimeoutMS: 10000
+  connectTimeoutMS: 10000,
 }
 
 const url = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`
 
-mongoose.connect(url, options)
+mongoose
+  .connect(url, options)
   .then(async () => {
     console.log('MongoDB is connected')
 
@@ -31,7 +32,7 @@ mongoose.connect(url, options)
 
     console.log('done!')
   })
-  .catch((err) => {
+  .catch(err => {
     console.log(err)
   })
 
