@@ -50,9 +50,8 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 const cors = corsMiddleware({
-  origins: ['*'],
-  allowHeaders: ['Authorization'],
-  exposeHeaders: ['Authorization'],
+  origins: ['http://kyros-app.com:3000'],
+  credentials: true,
 })
 
 app.pre(cors.preflight)
@@ -64,11 +63,12 @@ app.use(helmet())
 app.use(cookieParser.parse)
 
 app.use((req, res, next) => {
-  const { kyros } = req.cookies
-  const cookie = kyros ? JSON.parse(kyros) : null
+  const { accessToken } = req.cookies
 
-  if (cookie && cookie.accessToken) {
-    const verified = verifyToken(cookie.accessToken)
+  if (accessToken) {
+    const verified = verifyToken(accessToken)
+
+    console.log('verified', verified)
 
     if (!verified) {
       req.user = null
