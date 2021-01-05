@@ -11,9 +11,12 @@ export default {
 
     if (validation.error) {
       next(
-        new BadRequestError({
-          cause: validation.error,
-        }, 'Validation failed creating user')
+        new BadRequestError(
+          {
+            cause: validation.error,
+          },
+          'Validation failed creating user',
+        ),
       )
       return
     }
@@ -24,12 +27,14 @@ export default {
       const data = await user.save()
 
       res.json(format({ entity: 'user', omit: ['password'], data, req, res }))
-
     } catch (err) {
       next(
-        new BadRequestError({
-          cause: err,
-        }, 'User not created')
+        new BadRequestError(
+          {
+            cause: err,
+          },
+          'User not created',
+        ),
       )
     }
   },
@@ -51,9 +56,12 @@ export default {
       res.json(format({ entity: 'user', data, req, res }))
     } catch (err) {
       next(
-        new BadRequestError({
-          cause: err,
-        }, 'Error fetching users')
+        new BadRequestError(
+          {
+            cause: err,
+          },
+          'Error fetching users',
+        ),
       )
     }
   },
@@ -65,12 +73,14 @@ export default {
       const data = await User.findById(req.params.id)
 
       res.json(format({ entity: 'user', data, req, res }))
-
     } catch (err) {
       next(
-        new BadRequestError({
-          cause: err,
-        }, 'Error updating user')
+        new BadRequestError(
+          {
+            cause: err,
+          },
+          'Error updating user',
+        ),
       )
     }
   },
@@ -82,13 +92,15 @@ export default {
       await User.remove({ _id: req.params.id })
 
       res.json(format({ action: 'remove', entity: 'user', data, req, res }))
-
     } catch (err) {
       next(
-        new BadRequestError({
-          cause: err,
-        }, 'Error removing user')
+        new BadRequestError(
+          {
+            cause: err,
+          },
+          'Error removing user',
+        ),
       )
     }
-  }
+  },
 }

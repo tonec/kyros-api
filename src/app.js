@@ -68,8 +68,6 @@ app.use((req, res, next) => {
   if (accessToken) {
     const verified = verifyToken(accessToken)
 
-    console.log('verified', verified)
-
     if (!verified) {
       req.user = null
     }

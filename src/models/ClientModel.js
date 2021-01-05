@@ -1,21 +1,20 @@
 import { Schema, model } from 'mongoose'
 import Joi from '@hapi/joi'
 
-const ClientSchema = Schema({
-  name: {
-    type: String,
-    trim: true,
-    required: true
+const ClientSchema = Schema(
+  {
+    name: String,
+    logo: String,
+    timezone: String,
   },
-  logo: {
-    type: String
-  }
-}, { timestamps: true })
+  { timestamps: true },
+)
 
 ClientSchema.methods.joiValidate = obj => {
   return Joi.object({
     name: Joi.string().required(),
-    logo: Joi.string()
+    logo: Joi.string(),
+    timezone: Joi.string().required,
   }).validate(obj)
 }
 
