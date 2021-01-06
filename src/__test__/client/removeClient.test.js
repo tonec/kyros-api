@@ -32,7 +32,10 @@ describe('DELETE: /client/:id', () => {
       })
   })
 
-  it('deletes client', done => {
+  it('deletes client', async done => {
+    const clientBefore = await Client.findById(clientOne._id)
+    expect(clientBefore.name).toBe('Test Client 1')
+
     request
       .delete(path(`/client/${clientOne._id}`))
       .set('Cookie', `accessToken=${cookie}`)
@@ -43,16 +46,9 @@ describe('DELETE: /client/:id', () => {
           return done(new Error(`Supertest has encountered an error: ${err}`))
         }
 
-        const client = await Client.findById(clientOne._id)
+        const clientAfter = await Client.findById(clientOne._id)
 
-        expect(client.name).toBe('New Client Name')
-
-        const { action, entity, data } = res.body
-
-        expect(action).toBe('store')
-        expect(entity).toBe('client')
-
-        expect(data.entities[0].name).toBe('New Client Name')
+        expect(clientAfter).toBeNull()
 
         done()
       })
