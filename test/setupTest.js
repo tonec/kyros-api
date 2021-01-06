@@ -9,7 +9,7 @@ beforeAll(async done => {
     MONGO_PASSWORD,
     MONGO_HOSTNAME,
     MONGO_PORT,
-    MONGO_DB
+    MONGO_DB,
   } = process.env
 
   const options = { useNewUrlParser: true, useUnifiedTopology: true }
@@ -22,7 +22,7 @@ beforeAll(async done => {
 
   mongoose.connection
     .once('open', () => {
-      console.log('Mongo connection open')
+      // console.log('Mongo connection open')
       done()
     })
     .on('error', error => {
@@ -30,7 +30,7 @@ beforeAll(async done => {
     })
 })
 
-async function removeAllCollections () {
+async function removeAllCollections() {
   const collections = Object.keys(mongoose.connection.collections)
   for (const collectionName of collections) {
     const collection = mongoose.connection.collections[collectionName]
@@ -52,6 +52,6 @@ export const registerAndLoginUser = api => userProps =>
         .send(userProps)
         .then(login => ({
           registration: registration.body,
-          login: login.body
-        }))
+          login: login.body,
+        })),
     )

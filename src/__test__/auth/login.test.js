@@ -1,40 +1,37 @@
 import mongoose from 'mongoose'
 import supertest from 'supertest'
-import app from '../app'
-import { path } from '../utils'
-import cookie from '../../test/test-cookie'
+import app from '../../app'
+import { path } from '../../utils'
+import cookie from '../../../test/test-cookie'
 
 const request = supertest(app)
 
 const Client = mongoose.model('Client')
-const User = mongoose.model('User')
 
 const clientProps = {
-  name: 'Test client'
+  name: 'Test client',
 }
 
 const userProps = {
   firstName: 'Joe',
   lastName: 'Bloggs',
+  address1: '1 Test Street',
+  city: 'Test city',
+  postcode: 'N22BN',
   email: 'joe-bloggs@example.com',
-  password: '1234567890',
-  role: 'host'
+  password: 'password',
+  permissions: 'admin',
 }
 
 describe('ROUTE: /auth/login', () => {
   beforeEach(async done => {
     const client = await new Client(clientProps)
+    const props = { ...userProps, client: client._id }
 
-    request.post(path('/user'))
-      .send({
-        firstName: 'Joe',
-        lastName: 'Bloggs',
-        email: 'joe-bloggs@example.com',
-        password: '1234567890',
-        client: client._id,
-        role: 'host'
-      })
-      .set('Cookie', `kyros=${JSON.stringify(cookie)}`)
+    request
+      .post(path('/user'))
+      .send(props)
+      .set('Cookie', `accessToken=${cookie}`)
       .expect('Content-type', /json/)
       .expect(200)
       .end(err => {
@@ -46,10 +43,11 @@ describe('ROUTE: /auth/login', () => {
   })
 
   it('A POST should reject a login with an invalid user', done => {
-    request.post(path('/auth/login'))
+    request
+      .post(path('/auth/login'))
       .send({
         email: 'not-registered@example.com',
-        password: '1234567890'
+        password: 'password',
       })
       .end((err, res) => {
         if (err) {
@@ -65,10 +63,11 @@ describe('ROUTE: /auth/login', () => {
   })
 
   it('A POST should reject a login with an invalid password', done => {
-    request.post(path('/auth/login'))
+    request
+      .post(path('/auth/login'))
       .send({
         email: 'joe-bloggs@example.com',
-        password: 'wrong_password'
+        password: 'wrong_password',
       })
       .end((err, res) => {
         if (err) {
@@ -77,17 +76,20 @@ describe('ROUTE: /auth/login', () => {
 
         expect(res.status).toBe(401)
         expect(res.body.code).toBe('Unauthorized')
-        expect(res.body.message).toBe('The password entered does not match our records')
+        expect(res.body.message).toBe(
+          'The password entered does not match our records',
+        )
 
         done()
       })
   })
 
   it('A POST to /auth/login should return a token for valid users', done => {
-    request.post(path('/auth/login'))
+    request
+      .post(path('/auth/login'))
       .send({
         email: 'joe-bloggs@example.com',
-        password: '1234567890'
+        password: 'password',
       })
       .end((err, res) => {
         if (err) {

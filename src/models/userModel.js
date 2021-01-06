@@ -18,7 +18,6 @@ const UserSchema = new Schema(
 
     phone: String,
     dateOfBirth: String,
-    rate: Number,
 
     super: { type: Boolean, default: false },
     // userGroup: { type: Schema.Types.ObjectId, ref: 'Client' },
@@ -48,7 +47,6 @@ UserSchema.methods.joiValidate = obj => {
 
     phone: Joi.string(),
     dateOfBirth: Joi.string(),
-    rate: Joi.number().required(),
 
     super: Joi.boolean(),
     // userGroup: Joi.string().required(),

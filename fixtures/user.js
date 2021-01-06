@@ -19,7 +19,6 @@ export default async () => {
 
     phone: '01234567890',
     dateOfBirth: '20/03/2000',
-    rate: '25.50',
 
     super: true,
     // useGroup: randomClient._id,
@@ -51,7 +50,6 @@ export default async () => {
 
       phone: faker.phone.phoneNumber(),
       dateOfBirth: '20/03/2000',
-      rate: '25.50',
 
       super: faker.random.boolean(),
       role: faker.helpers.randomize(['admin', 'reception', 'host']),
