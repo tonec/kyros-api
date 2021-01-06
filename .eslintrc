@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "standard"
-  ],
+  "extends": ["standard"],
   "env": {
     "browser": true,
     "node": true,
@@ -15,15 +13,10 @@
   "rules": {
     "no-debugger": "warn",
     "comma-dangle": 0,
-    "quotes": [
-      2,
-      "single",
-      "avoid-escape"
-    ],
-    "no-unused-vars": [
-      1
-    ],
+    "quotes": [2, "single", "avoid-escape"],
+    "no-unused-vars": [1],
     "no-return-assign": 0,
     "padded-blocks": 0,
+    "space-before-function-paren": 0
   }
 }
