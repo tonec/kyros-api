@@ -39,6 +39,7 @@
     "dotenv": "^8.2.0",
     "helmet": "^3.23.3",
     "is-master": "^1.2.2",
+    "joi-phone-number": "^5.0.0",
     "jsonwebtoken": "^8.1.1",
     "lodash": "^4.17.15",
     "mongo": "^0.1.0",
