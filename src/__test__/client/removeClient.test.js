@@ -4,31 +4,24 @@ import app from '../../app'
 import { path } from '../../utils'
 import cookie from '../../../test/test-cookie'
 
-const Client = mongoose.model('Client')
-const Service = mongoose.model('Service')
-
 const request = supertest(app)
 
-const clientProps = {
-  name: 'Test client',
-}
+const Client = mongoose.model('Client')
 
-describe('GET: /service/:id', () => {
-  let id
+describe('DELETE: /client/:id', () => {
+  let clientOne
+  let clientTwo
 
-  beforeEach(async done => {
-    const client = await new Client(clientProps)
-    const result = await new Service({
-      name: 'Test Service',
-      client: client._id,
-    }).save()
-    id = `${result._id}`
-    done()
+  beforeEach(done => {
+    clientOne = new Client({ name: 'Test Client 1' })
+    clientTwo = new Client({ name: 'Test Client 2' })
+
+    Promise.all([clientOne.save(), clientTwo.save()]).then(() => done())
   })
 
   it('requires authorization', done => {
     request
-      .get(path(`/service/${id}`))
+      .delete(path(`/client/${clientOne._id}`))
       .expect('Content-type', /json/)
       .expect(401)
       .end(err => {
@@ -39,24 +32,27 @@ describe('GET: /service/:id', () => {
       })
   })
 
-  it('returns the service', async done => {
+  it('deletes client', done => {
     request
-      .get(path(`/service/${id}`))
+      .delete(path(`/client/${clientOne._id}`))
       .set('Cookie', `accessToken=${cookie}`)
       .expect('Content-type', /json/)
       .expect(200)
-      .end((err, res) => {
+      .end(async (err, res) => {
         if (err) {
           return done(new Error(`Supertest has encountered an error: ${err}`))
         }
 
+        const client = await Client.findById(clientOne._id)
+
+        expect(client.name).toBe('New Client Name')
+
         const { action, entity, data } = res.body
 
         expect(action).toBe('store')
-        expect(entity).toBe('service')
+        expect(entity).toBe('client')
 
-        expect(data.entities[0].id).toBe(id)
-        expect(data.entities[0].name).toBe('Test Service')
+        expect(data.entities[0].name).toBe('New Client Name')
 
         done()
       })

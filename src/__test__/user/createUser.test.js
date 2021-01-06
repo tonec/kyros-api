@@ -32,7 +32,7 @@ describe('POST: /user', () => {
     done()
   })
 
-  it('A POST with missing first name should be a bad request', async done => {
+  it('missing first name is rejected', async done => {
     const { firstName, ...props } = userProps
 
     request
@@ -53,7 +53,7 @@ describe('POST: /user', () => {
       })
   })
 
-  it('A POST with missing last name should be a bad request', async done => {
+  it('missing last name is rejected', async done => {
     const { lastName, ...props } = userProps
 
     request
@@ -74,7 +74,7 @@ describe('POST: /user', () => {
       })
   })
 
-  it('A POST with missing email should be a bad request', done => {
+  it('missing email is rejected', done => {
     const { email, ...props } = userProps
 
     request
@@ -95,7 +95,7 @@ describe('POST: /user', () => {
       })
   })
 
-  it('A POST with missing password should be a bad request', done => {
+  it('missing password is rejected', done => {
     const { password, ...props } = userProps
 
     request
@@ -116,7 +116,7 @@ describe('POST: /user', () => {
       })
   })
 
-  it('A POST should create a new user', done => {
+  it('creates a new user', done => {
     const props = { ...userProps, client: client.id }
 
     User.countDocuments().then(count => {

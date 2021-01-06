@@ -13,7 +13,7 @@ const clientProps = {
   name: 'Test client',
 }
 
-const userOneProps = {
+const userProps = {
   firstName: 'Joe',
   lastName: 'Bloggs',
   address1: '1 Test Street',
@@ -30,14 +30,14 @@ describe('GET: /user/:id', () => {
   beforeEach(async done => {
     const client = await new Client(clientProps)
     const result = await new User({
-      ...userOneProps,
+      ...userProps,
       client: client._id,
     }).save()
     id = `${result._id}`
     done()
   })
 
-  it('A GET to /user/:id should require authorization', done => {
+  it('requires authorization', done => {
     request
       .get(path(`/user/${id}`))
       .expect('Content-type', /json/)
@@ -50,7 +50,7 @@ describe('GET: /user/:id', () => {
       })
   })
 
-  it('should return the user with that id', async done => {
+  it('returns the user', async done => {
     request
       .get(path(`/user/${id}`))
       .set('Cookie', `accessToken=${cookie}`)

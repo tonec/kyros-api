@@ -48,7 +48,7 @@ describe('GET: /user', () => {
     Promise.all([userOne.save(), userTwo.save()]).then(() => done())
   })
 
-  it('A GET to /user should require authorization', done => {
+  it('requires authorization', done => {
     request
       .get(path('/user'))
       .expect(401)
@@ -60,7 +60,7 @@ describe('GET: /user', () => {
       })
   })
 
-  it('A GET to /user should return a list of users', done => {
+  it('returns a list of users', done => {
     request
       .get(path('/user'))
       .set('Cookie', `accessToken=${cookie}`)

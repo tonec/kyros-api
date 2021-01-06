@@ -13,7 +13,7 @@ const clientProps = {
 }
 
 describe('POST: /client', () => {
-  it('should require authorization', done => {
+  it('requires authorization', done => {
     request
       .get(path('/client'))
       .send(clientProps)
@@ -27,7 +27,7 @@ describe('POST: /client', () => {
       })
   })
 
-  it('A POST with missing name should be a bad request', async done => {
+  it('missing name is rejected', async done => {
     request
       .post(path('/client'))
       .set('Cookie', `accessToken=${cookie}`)
@@ -45,7 +45,7 @@ describe('POST: /client', () => {
       })
   })
 
-  it('A POST should create a new client', done => {
+  it('creates a new client', done => {
     Client.countDocuments().then(count => {
       request
         .post(path('/client'))

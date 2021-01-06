@@ -42,7 +42,7 @@ describe('ROUTE: /auth/login', () => {
       })
   })
 
-  it('A POST should reject a login with an invalid user', done => {
+  it('rejected if invalid email', done => {
     request
       .post(path('/auth/login'))
       .send({
@@ -62,7 +62,7 @@ describe('ROUTE: /auth/login', () => {
       })
   })
 
-  it('A POST should reject a login with an invalid password', done => {
+  it('rejected if invalid password', done => {
     request
       .post(path('/auth/login'))
       .send({
@@ -84,7 +84,7 @@ describe('ROUTE: /auth/login', () => {
       })
   })
 
-  it('A POST to /auth/login should return a token for valid users', done => {
+  it('returns a token for valid login', done => {
     request
       .post(path('/auth/login'))
       .send({

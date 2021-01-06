@@ -17,7 +17,7 @@ describe('GET: /client/:id', () => {
     done()
   })
 
-  it('A GET to /client/:id should require authorization', done => {
+  it('requires authorization', done => {
     request
       .get(path(`/client/${id}`))
       .expect('Content-type', /json/)
@@ -30,7 +30,7 @@ describe('GET: /client/:id', () => {
       })
   })
 
-  it('should return the client with that id', async done => {
+  it('returns the client', async done => {
     request
       .get(path(`/client/${id}`))
       .set('Cookie', `accessToken=${cookie}`)

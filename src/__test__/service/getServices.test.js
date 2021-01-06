@@ -25,7 +25,7 @@ describe('GET: /service', () => {
     Promise.all([serviceOne.save(), serviceTwo.save()]).then(() => done())
   })
 
-  it('A GET to /service should require authorization', done => {
+  it('requires authorization', done => {
     request
       .get(path('/service'))
       .expect(401)
@@ -37,7 +37,7 @@ describe('GET: /service', () => {
       })
   })
 
-  it('A GET to /service should return a list of service', done => {
+  it('return a list of services', done => {
     request
       .get(path('/service'))
       .set('Cookie', `accessToken=${cookie}`)

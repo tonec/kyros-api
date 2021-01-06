@@ -48,7 +48,7 @@ describe('PATCH: /user/:id', () => {
     Promise.all([userOne.save(), userTwo.save()]).then(() => done())
   })
 
-  it('should require authorization', done => {
+  it('requires authorization', done => {
     request
       .get(path('/user'))
       .send(userOneProps)
@@ -62,7 +62,7 @@ describe('PATCH: /user/:id', () => {
       })
   })
 
-  it('A PATCH should update the user', done => {
+  it('updates the user', done => {
     request
       .patch(path(`/user/${userOne._id}`))
       .send({

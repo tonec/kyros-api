@@ -21,7 +21,7 @@ describe('POST: /service', () => {
     client.save().then(() => done())
   })
 
-  it('should require authorization', done => {
+  it('requires authorization', done => {
     request
       .get(path('/service'))
       .send({
@@ -39,7 +39,7 @@ describe('POST: /service', () => {
       })
   })
 
-  it('A POST with missing name should be a bad request', async done => {
+  it('missing name is rejected', async done => {
     request
       .post(path('/service'))
       .set('Cookie', `accessToken=${cookie}`)
@@ -57,7 +57,7 @@ describe('POST: /service', () => {
       })
   })
 
-  it('A POST should create a new service', done => {
+  it('creates a new service', done => {
     Service.countDocuments().then(count => {
       request
         .post(path('/service'))

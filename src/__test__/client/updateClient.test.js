@@ -19,11 +19,11 @@ describe('PATCH: /client/:id', () => {
     Promise.all([clientOne.save(), clientTwo.save()]).then(() => done())
   })
 
-  it('should require authorization', done => {
+  it('requires authorization', done => {
     request
-      .get(path('/client'))
+      .patch(path(`/client/${clientOne._id}`))
       .send({
-        name: 'Test Client',
+        name: 'New client name',
       })
       .expect('Content-type', /json/)
       .expect(401)
@@ -35,10 +35,10 @@ describe('PATCH: /client/:id', () => {
       })
   })
 
-  it('A PATCH should update the client', done => {
+  it('updates client', done => {
     request
       .patch(path(`/client/${clientOne._id}`))
-      .send({ name: 'New Client Name' })
+      .send({ name: 'New client name' })
       .set('Cookie', `accessToken=${cookie}`)
       .expect('Content-type', /json/)
       .expect(200)
@@ -49,14 +49,14 @@ describe('PATCH: /client/:id', () => {
 
         const client = await Client.findById(clientOne._id)
 
-        expect(client.name).toBe('New Client Name')
+        expect(client.name).toBe('New client name')
 
         const { action, entity, data } = res.body
 
         expect(action).toBe('store')
         expect(entity).toBe('client')
 
-        expect(data.entities[0].name).toBe('New Client Name')
+        expect(data.entities[0].name).toBe('New client name')
 
         done()
       })

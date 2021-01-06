@@ -25,7 +25,7 @@ describe('PATCH: /service/:id', () => {
     Promise.all([serviceOne.save(), serviceTwo.save()]).then(() => done())
   })
 
-  it('should require authorization', done => {
+  it('requires authorization', done => {
     request
       .get(path('/service'))
       .send({
@@ -41,7 +41,7 @@ describe('PATCH: /service/:id', () => {
       })
   })
 
-  it('A PATCH should update the service', done => {
+  it('updates the service', done => {
     request
       .patch(path(`/service/${serviceOne._id}`))
       .send({ name: 'New Service Name' })
