@@ -1,7 +1,7 @@
 import { Schema, model } from 'mongoose'
-import Joi from '@hapi/joi'
 import bcrypt from 'bcrypt-nodejs'
 import beautifyUnique from 'mongoose-beautiful-unique-validation'
+import Joi from '../utils/joi'
 
 const UserSchema = new Schema(
   {
@@ -16,14 +16,12 @@ const UserSchema = new Schema(
     email: String,
     password: String,
 
-    phone: Number,
-    dateOfBirth: Date,
+    phone: String,
+    dateOfBirth: String,
     rate: Number,
 
     super: { type: Boolean, default: false },
-
-    userGroup: { type: Schema.Types.ObjectId, ref: 'Client' },
-
+    // userGroup: { type: Schema.Types.ObjectId, ref: 'Client' },
     client: { type: Schema.Types.ObjectId, ref: 'Client' },
 
     permissions: String,
@@ -48,12 +46,12 @@ UserSchema.methods.joiValidate = obj => {
       .regex(/[a-zA-Z0-9]{3,30}/)
       .required(),
 
-    phone: Joi.number().required(),
-    dateOfBirth: Joi.date().required(),
+    phone: Joi.string(),
+    dateOfBirth: Joi.string(),
     rate: Joi.number().required(),
 
     super: Joi.boolean(),
-    userGroup: Joi.string().required(),
+    // userGroup: Joi.string().required(),
     client: Joi.string().required(),
     permissions: Joi.string().valid('admin', 'reception', 'host').required(),
   }).validate(obj)
